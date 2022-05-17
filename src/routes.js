@@ -10,6 +10,7 @@ import NotFound from './pages/Page404';
 import Register from './pages/Register';
 import Evaluators from './pages/Evaluators';
 import Report from './pages/Report';
+import IndividualReport from './pages/IndividualReport';
 
 // ----------------------------------------------------------------------
 
@@ -40,6 +41,13 @@ export default function Router() {
       children: [
         { path: 'dashboard', element: <Dashboard /> },
         { path: 'incidentsReports', element: <IncidentsReports /> },     
+      ],
+    },
+    {
+      path: '/IR',
+      element: <DashboardLayout />,
+      children: [
+        { path: 'IndividualReport', element: <IndividualReport /> },   
       ],
     },
     {

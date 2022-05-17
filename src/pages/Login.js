@@ -79,7 +79,7 @@ export default function Login() {
 
         {mdUp && (
           <SectionStyle>
-            <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
+            <Typography variant="h3" sx={{ px: 5, mt: 1, mb: 5 }}>
               Welcome to Incident Report Portal
             </Typography>
             <img src="/static/illustrations/logo.png" alt="login" />

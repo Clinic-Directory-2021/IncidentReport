@@ -8,6 +8,7 @@ import Modal from '@mui/material/Modal';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import "./App.css"
 
 
 
@@ -49,7 +50,6 @@ const TABLE_HEAD = [
   { id: 'role', label: 'Section', alignRight: false },
   { id: 'role', label: 'Year Level', alignRight: false },
   { id: 'isVerified', label: 'Status', alignRight: false },
-  { id: 'status', label: 'Action', alignRight: false },
   { id: '' },
 ];
 
@@ -61,15 +61,14 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: '50%',
-  height:'50%',
+  height:'55%',
+
   bgcolor: 'background.paper',
-  border: '2px solid #000',
+  border: '2px solid #ffffff',
   boxShadow: 24,
+  borderRadius: 1,
   p: 4,
 };
-
-
-
 
 
 // ----------------------------------------------------------------------
@@ -203,21 +202,19 @@ export default function User() {
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-        
-
-        
+        aria-describedby="modal-modal-description"   
       >
-    
         <Box sx={style}>
           <div>
             <CKEditor
             editor={ClassicEditor}
             />
           </div>
+          <Box style={{marginTop:'25px', marginBottom:'20px'}}>
+          <Button variant="contained">Contained</Button>
+          </Box>
 
         </Box>
-        
         </Modal>
         </Stack>
 
@@ -245,8 +242,7 @@ export default function User() {
                             company, 
                             avatarUrl, 
                             isVerified
-                            
-                            
+                                                        
                             } = row;
                     const isItemSelected = selected.indexOf(name) !== -1;
 
