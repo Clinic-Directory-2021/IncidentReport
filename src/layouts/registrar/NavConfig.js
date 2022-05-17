@@ -9,12 +9,12 @@ const navConfig = [
   {
     title: 'Dashboard',
     path: '/registrar/dashboard',
-    icon: getIcon('eva:people-fill'),
+    icon: getIcon('eva:pie-chart-outline'),
   },
   {
     title: 'Evaluators',
     path: '/registrar/evaluators',
-    icon: getIcon('eva:shopping-bag-fill'),
+    icon: getIcon('eva:people-fill'),
   },
   {
     title: 'Incidents Reports',
@@ -24,7 +24,7 @@ const navConfig = [
   {
     title: 'Report',
     path: '/registrar/report',
-    icon: getIcon('eva:alert-triangle-fill'),
+    icon: getIcon('eva:printer-outline'),
   },
 ];
 

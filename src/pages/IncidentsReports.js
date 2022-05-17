@@ -2,6 +2,15 @@ import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+
+
+
+
 // material
 import {
   Card,
@@ -24,21 +33,38 @@ import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
-import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashboard/dashboard';
+import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashboard/dashboardIncident';
 // mock
 import USERLIST from '../_mock/user';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'studentNumber', label: 'Student Number', alignRight: false },
+  { id: 'name', label: 'Student Number', alignRight: false },
   { id: 'name', label: 'Name', alignRight: false },
-  { id: 'incident', label: 'Incident Type', alignRight: false },
-  { id: 'section', label: 'Section', alignRight: false },
+  { id: 'company', label: 'Incident Type', alignRight: false },
+  { id: 'role', label: 'Section', alignRight: false },
+  { id: 'role', label: 'Year Level', alignRight: false },
   { id: 'isVerified', label: 'Status', alignRight: false },
+  { id: 'status', label: 'Action', alignRight: false },
   { id: '' },
-  
 ];
+
+
+// MODAL ----------------------------------------------------------------------
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
+
 
 
 
@@ -136,21 +162,70 @@ export default function User() {
 
   const isUserNotFound = filteredUsers.length === 0;
 
+
+// MODAL CONST----------------------------------------------------------------------
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+                                                           
   return (
     <Page title="Incidents Reports">
+
+
+
+   
+
+
+
       <Container>
+      
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             Incidents Reports
           </Typography>
-          <Button variant="contained" component={RouterLink} to="#" startIcon={<Iconify icon="eva:plus-fill" />}>
+
+
+          
+
+          <Button onClick={handleOpen} variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
             File Report
           </Button>
+
+          
+          <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        
+
+        
+      >
+    
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Mike Angello B,
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+          </Typography>
+        </Box>
+        
+        </Modal>
+
+
+
+
+
+
         </Stack>
 
         <Card>
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
-
+          
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
@@ -198,10 +273,11 @@ export default function User() {
                           </Stack>
                         </TableCell>
                         <TableCell align="left">{company}</TableCell>
+                        <TableCell align="left">{company}</TableCell>
                         <TableCell align="left">{role}</TableCell>
                         <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
                         <TableCell align="left">
-                          <Label variant="ghost" color={(status === 'banned' && 'error') || 'success'}>
+                          <Label variant="ghost" color={(status === 'close' && 'error') || 'success'}>
                             {sentenceCase(status)}
                           </Label>
                         </TableCell>
@@ -242,7 +318,10 @@ export default function User() {
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Card>
+        
       </Container>
+      
     </Page>
+    
   );
 }

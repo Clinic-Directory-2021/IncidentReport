@@ -5,6 +5,7 @@ import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText } from '@mui/mat
 // component
 import Iconify from '../../../components/Iconify';
 
+
 // ----------------------------------------------------------------------
 
 export default function UserMoreMenu() {
@@ -27,6 +28,13 @@ export default function UserMoreMenu() {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
+      <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>
+          <ListItemIcon>
+            <Iconify icon="eva:eye-outline" width={24} height={24} />
+          </ListItemIcon>
+          <ListItemText primary="View" primaryTypographyProps={{ variant: 'body2' }} />
+        </MenuItem>
+      
         <MenuItem sx={{ color: 'text.secondary' }}>
           <ListItemIcon>
             <Iconify icon="eva:trash-2-outline" width={24} height={24} />
@@ -34,12 +42,8 @@ export default function UserMoreMenu() {
           <ListItemText primary="Delete" primaryTypographyProps={{ variant: 'body2' }} />
         </MenuItem>
 
-        <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>
-          <ListItemIcon>
-            <Iconify icon="eva:edit-fill" width={24} height={24} />
-          </ListItemIcon>
-          <ListItemText primary="Edit" primaryTypographyProps={{ variant: 'body2' }} />
-        </MenuItem>
+        
+
       </Menu>
     </>
   );

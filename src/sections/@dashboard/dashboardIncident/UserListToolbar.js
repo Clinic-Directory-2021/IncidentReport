@@ -3,6 +3,17 @@ import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import { Toolbar, Tooltip, IconButton, Typography, OutlinedInput, InputAdornment } from '@mui/material';
 // component
+
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
+
+
+// import FormGroup from '@mui/material/FormGroup';
+// import FormControlLabel from '@mui/material/FormControlLabel';
+// import Box from '@mui/material/Box';
+// import Checkbox from '@mui/material/Checkbox';
+
+
 import Iconify from '../../../components/Iconify';
 
 // ----------------------------------------------------------------------
@@ -13,6 +24,21 @@ const RootStyle = styled(Toolbar)(({ theme }) => ({
   justifyContent: 'space-between',
   padding: theme.spacing(0, 1, 0, 3),
 }));
+
+
+// ----------------------------------------------------------------------
+
+const top100Films = [
+  { label: 'The Shawshank Redemption', year: 1994 },
+  { label: 'The Godfather', year: 1972 },
+  { label: 'The Godfather: Part II', year: 1974 },
+  { label: 'The Dark Knight', year: 2008 },
+  { label: '12 Angry Men', year: 1957 },
+  { label: "Schindler's List", year: 1993 },
+  { label: 'Pulp Fiction', year: 1994 },
+];
+
+
 
 const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
   width: 240,
@@ -37,6 +63,8 @@ UserListToolbar.propTypes = {
 
 export default function UserListToolbar({ numSelected, filterName, onFilterName }) {
   return (
+
+  
     <RootStyle
       sx={{
         ...(numSelected > 0 && {
@@ -60,21 +88,40 @@ export default function UserListToolbar({ numSelected, filterName, onFilterName 
             </InputAdornment>
           }
         />
+        
       )}
-
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton>
-            <Iconify icon="eva:trash-2-fill" />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <Iconify icon="ic:round-filter-list" />
-          </IconButton>
-        </Tooltip>
-      )}
+        
+      <Autocomplete
+      disablePortal
+      id="combo-box-demo"
+      options={top100Films}
+      sx={{ width: 200 }}
+      renderInput={(params) => <TextField {...params} label="Incident Type" />}
+    />
+    <Autocomplete
+      disablePortal
+      id="combo-box-demo"
+      options={top100Films}
+      sx={{ width: 200 }}
+      renderInput={(params) => <TextField {...params} label="Section" />}
+    />
+    <Autocomplete
+      disablePortal
+      id="combo-box-demo"
+      options={top100Films}
+      sx={{ width: 200 }}
+      renderInput={(params) => <TextField {...params} label="Year Level" />}
+    />
+    <Autocomplete
+      disablePortal
+      id="combo-box-demo"
+      options={top100Films}
+      sx={{ width: 200 }}
+      renderInput={(params) => <TextField {...params} label="Status" />}
+    />
+  
+  
+  
     </RootStyle>
   );
 }
