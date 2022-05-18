@@ -2,15 +2,54 @@ import { useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 // material
 import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText } from '@mui/material';
+
+// firebase
+import { auth,firestore } from "src/firebase/firebase-config";
+import { signInWithEmailAndPassword, deleteUser } from "firebase/auth"
+import { doc, getDoc, deleteDoc } from "firebase/firestore";
+
 // component
 import Iconify from '../../../components/Iconify';
 
+const base64 = require('base-64');
 
 // ----------------------------------------------------------------------
 
-export default function UserMoreMenu() {
+export default function UserMoreMenu(props) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
+
+  const DeleteUser = async(db,collectionName,id) =>{
+    const document = doc(db, collectionName, id);
+    const docSnap = await getDoc(document);
+
+    if (docSnap.exists()) {
+      signInWithEmailAndPassword(auth, docSnap.data().email, base64.decode(docSnap.data().password))
+      .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        const userd = auth.currentUser;
+
+        deleteUser(userd).then(() => {
+          deleteDoc(doc(db, collectionName, id));
+        }).catch((error) => {
+          console.log(error)
+          console.log('error 1')
+        });
+
+        console.log(userd)
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorMessage)
+        console.log('error 2')
+      });
+    } else {
+      // doc.data() will be undefined in this case
+      console.log("No such document!");
+    }
+  }
 
   return (
     <>
@@ -39,7 +78,9 @@ export default function UserMoreMenu() {
           <ListItemIcon>
             <Iconify icon="eva:trash-2-outline" width={24} height={24} />
           </ListItemIcon>
-          <ListItemText primary="Delete" primaryTypographyProps={{ variant: 'body2' }} />
+          <ListItemText primary="Delete" primaryTypographyProps={{ variant: 'body2' }} onClick={()=>{
+            DeleteUser(firestore,"users",props.id)
+          }} />
         </MenuItem>
       </Menu>
     </>

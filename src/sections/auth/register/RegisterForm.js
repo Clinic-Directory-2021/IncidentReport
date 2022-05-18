@@ -7,44 +7,60 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { Stack, TextField, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import Snackbar from '@mui/material/Snackbar';
+
 // component
 import { auth,firestore } from 'src/firebase/firebase-config';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore"; 
 import Iconify from '../../../components/Iconify';
 
+const base64 = require('base-64');
 
 // ----------------------------------------------------------------------
 
 export default function RegisterForm() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setOpen(false);
-  };
+  const [loading, setLoading] = useState(false)
+  const [message,setMessage] = useState('')
 
   const RegisterAuth = (data) =>{
-    
-    createUserWithEmailAndPassword(auth, data.email, data.password)
-    .then(async(userCredential) => {
-      // Signed in 
-      const user = userCredential.user;
-        await setDoc(doc(firestore, "users", user.uid),data).then(()=>{
+    setLoading(true)
+    if(data.password === data.confirmpassword){
+      createUserWithEmailAndPassword(auth, data.email, data.password)
+      .then(async(userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+          await setDoc(doc(firestore, "users", user.uid),{
+            uid:user.uid,
+            firstName:data.firstName,
+            middleName:data.middleName,
+            lastName:data.lastName,
+            email:data.email,
+            yearLevel:data.yearLevel,
+            section:data.section,
+            password:base64.encode(data.password)
+          }).then(()=>{
+          setOpen(true);
+          setLoading(false)
+          navigate('/login', { replace: true });
+        });
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
         setOpen(true);
-        navigate('/login', { replace: true });
+        setMessage(errorMessage)
+        setLoading(false)
+        // ..
       });
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorMessage)
-      // ..
-    });
+    }
+    else{
+      setOpen(true);
+      setMessage("Password and Confirm password does not matched.")
+      setLoading(false)
+    }
+    
   }
 
   const [showPassword, setShowPassword] = useState(false);
@@ -147,6 +163,10 @@ export default function RegisterForm() {
             {...getFieldProps('yearLevel')}
             error={Boolean(touched.yearLevel && errors.yearLevel)}
             helperText={touched.yearLevel && errors.yearLevel} />}
+            inputValue={formik.values.yearLevel}
+            onInputChange={(event, newInputValue) => {
+              formik.values.yearLevel = newInputValue
+            }}
           />
 
           <TextField
@@ -196,10 +216,10 @@ export default function RegisterForm() {
             
           />
 
-          <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
+          <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={loading}>
             Register
           </LoadingButton>
-          <Snackbar open={open} autoHideDuration={6000} message="Succesfuly created an account. Login your account" onClose={handleClose} />
+          <Snackbar open={open} autoHideDuration={6000} message={message} />
         </Stack>
       </Form>
     </FormikProvider>

@@ -1,10 +1,16 @@
 import * as Yup from 'yup';
-import { useState } from 'react';
+import React,{ useState,forwardRef } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useFormik, Form, FormikProvider } from 'formik';
+
 // material
 import { Link, Stack, Checkbox, TextField, IconButton, InputAdornment, FormControlLabel } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+
+// Validation import
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+
 // component
 import { auth } from "src/firebase/firebase-config";
 import { signInWithEmailAndPassword } from "firebase/auth"
@@ -15,19 +21,33 @@ import Iconify from '../../../components/Iconify';
 
 export default function LoginForm() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false)
+  const [message,setMessage] = useState('')
+  const [error, setError] = useState(false)
 
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setError(false);
+  };
   const LoginAuth = (email, password) =>{
+    setLoading(true)
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       // Signed in 
       const user = userCredential.user;
+      setLoading(false)
       navigate('/registrar/dashboard', { replace: true });
       // ...
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-      console.log(errorMessage)
+      setMessage(errorMessage)
+      setError(true)
+      setLoading(false)
     });
   }
 
@@ -106,9 +126,12 @@ export default function LoginForm() {
 
         
         {/* <Link variant="subtitle2" component={RouterLink} to="/registrar/dashboard">     */}
-        <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
+        <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={loading}>
           Login
         </LoadingButton>
+        <Snackbar open={error} autoHideDuration={6000}  onClose={handleClose}>
+        <Alert severity="error">{message}</Alert>
+        </Snackbar>
        {/* </Link> */}
 
 

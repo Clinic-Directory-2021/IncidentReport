@@ -9,6 +9,9 @@ import TextareaAutosize from '@mui/material/TextareaAutosize';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
+// Firebase Initialization
+import { firestore } from 'src/firebase/firebase-config';
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 
 // material
 import {
@@ -39,10 +42,11 @@ import USERLIST from '../_mock/user';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'First Name', alignRight: false },
-  { id: 'role', label: 'Last Name', alignRight: false },
-  { id: 'role', label: 'Email', alignRight: false },
-  { id: '' },
+  { id: 'image', label: 'Image', alignRight: false },
+  { id: 'firstName', label: 'First Name', alignRight: false },
+  { id: 'middleName', label: 'Middle Name', alignRight: false },
+  { id: 'lastName', label: 'Last Name', alignRight: false },
+  { id: 'email', label: 'Email', alignRight: false },
 ];
 
 
@@ -105,6 +109,24 @@ export default function User() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [studentData, setStudentData] = useState([])
+
+  const getAllDocuments = (db,collectionName) =>{
+    const collectionList = query(collection(db, collectionName));
+    const unsubscribe = onSnapshot(collectionList, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+          temp.push(doc.data());
+      });
+      setStudentData(temp)
+    });
+  }
+
+  React.useEffect(() => {
+    getAllDocuments(firestore,"users")
+  }, [])
+  
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -221,23 +243,21 @@ export default function User() {
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, 
-                            name, 
-                            role, 
-                            status, 
-                            company, 
-                            avatarUrl, 
-                            isVerified
-                            
-                            
-                            } = row;
-                    const isItemSelected = selected.indexOf(name) !== -1;
+                  {studentData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                   const {
+                     uid,
+                    image,
+                    firstName,
+                    middleName,
+                    lastName,
+                    email
+                  } = row
+                  const isItemSelected = selected.indexOf(firstName) !== -1;
 
                     return (
                       <TableRow
                         hover
-                        key={id}
+                        key={firstName}
                         tabIndex={-1}
                         // role="checkbox"
                         selected={isItemSelected}
@@ -246,16 +266,15 @@ export default function User() {
                         
                         <TableCell style={{padding:'15px'}} component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={avatarUrl} />
-                            <Typography variant="subtitle2" noWrap>
-                              {name}
-                            </Typography>
+                            <Avatar alt={firstName} src={image} />
                           </Stack>
                         </TableCell>
-                        <TableCell align="left">{company}</TableCell>
-                        <TableCell align="left">{role}</TableCell>
+                        <TableCell align="left">{firstName}</TableCell>
+                        <TableCell align="left">{middleName}</TableCell>
+                        <TableCell align="left">{lastName}</TableCell>
+                        <TableCell align="left">{email}</TableCell>
                         <TableCell align="right">
-                          <UserMoreMenu />
+                          <UserMoreMenu id={uid}/>
                         </TableCell>
                       </TableRow>
                     );
@@ -283,7 +302,7 @@ export default function User() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={studentData.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
