@@ -274,7 +274,7 @@ export default function User() {
                         <TableCell align="left">{lastName}</TableCell>
                         <TableCell align="left">{email}</TableCell>
                         <TableCell align="right">
-                          <UserMoreMenu id={uid}/>
+                          <UserMoreMenu id={uid} collection="evaluators"/>
                         </TableCell>
                       </TableRow>
                     );

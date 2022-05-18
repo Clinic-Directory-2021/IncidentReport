@@ -79,7 +79,7 @@ export default function UserMoreMenu(props) {
             <Iconify icon="eva:trash-2-outline" width={24} height={24} />
           </ListItemIcon>
           <ListItemText primary="Delete" primaryTypographyProps={{ variant: 'body2' }} onClick={()=>{
-            DeleteUser(firestore,"users",props.id)
+            DeleteUser(firestore,props.collection,props.id)
           }} />
         </MenuItem>
       </Menu>

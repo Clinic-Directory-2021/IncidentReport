@@ -15,6 +15,7 @@ import Alert from '@mui/material/Alert';
 import { auth } from "src/firebase/firebase-config";
 import { signInWithEmailAndPassword } from "firebase/auth"
 import Iconify from '../../../components/Iconify';
+import { setEmail, setFirstName, setLastName } from './LoginModel';
 
 
 // ----------------------------------------------------------------------
@@ -39,6 +40,9 @@ export default function LoginForm() {
       // Signed in 
       const user = userCredential.user;
       setLoading(false)
+      setFirstName('BulSU')
+      setLastName('Admin')
+      setEmail(email)
       navigate('/registrar/dashboard', { replace: true });
       // ...
     })
