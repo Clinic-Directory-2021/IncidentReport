@@ -2,11 +2,13 @@ import * as Yup from 'yup';
 import { useState } from 'react';
 import { useFormik, Form, FormikProvider } from 'formik';
 import { useNavigate } from 'react-router-dom';
+import Autocomplete from '@mui/material/Autocomplete';
 // material
 import { Stack, TextField, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // component
 import Iconify from '../../../components/Iconify';
+
 
 // ----------------------------------------------------------------------
 
@@ -20,6 +22,7 @@ export default function RegisterForm() {
     lastName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Last name required'),
     email: Yup.string().email('Email must be a valid email address').required('Email is required'),
     password: Yup.string().required('Password is required'),
+    confirmpassword: Yup.string().required('Confirm Password is required'),
     studentNumber: Yup.string().required('Student number is required'),
     yearLevel: Yup.string().required('Year level is required'),
     section: Yup.string().required('Section is required'),
@@ -35,6 +38,7 @@ export default function RegisterForm() {
       lastName: '',
       studentNumber: '',
       email: '',
+      confirmpassword: '',
       password: '',
       yearLevel: '',
       section: '',
@@ -46,6 +50,16 @@ export default function RegisterForm() {
   });
 
   const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
+
+  const YEARLEVEL = [
+    { label: '1'},
+    { label: '2'},
+    { label: '3'},
+    { label: '4'},
+    { label: '5'},
+    { label: '6'},
+    { label: '7'},
+    ];
 
   return (
     <FormikProvider value={formik}>
@@ -95,13 +109,15 @@ export default function RegisterForm() {
             helperText={touched.email && errors.email}
           />
 
-          <TextField
+          <Autocomplete
             fullWidth
-            type="email"
-            label="Year level"
+            disablePortal
+            id="combo-box-demo"
+            options={YEARLEVEL}         
+            renderInput={(params) => <TextField {...params} label="Year Level" 
             {...getFieldProps('yearLevel')}
             error={Boolean(touched.yearLevel && errors.yearLevel)}
-            helperText={touched.yearLevel && errors.yearLevel}
+            helperText={touched.yearLevel && errors.yearLevel} />}
           />
 
           <TextField
@@ -129,6 +145,26 @@ export default function RegisterForm() {
             }}
             error={Boolean(touched.password && errors.password)}
             helperText={touched.password && errors.password}
+          />
+
+            <TextField
+            fullWidth
+            autoComplete="current-password"
+            type={showPassword ? 'text' : 'password'}
+            label="Confirm Password"
+            {...getFieldProps('confirmpassword')}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton edge="end" onClick={() => setShowPassword((prev) => !prev)}>
+                    <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            error={Boolean(touched.confirmpassword && errors.confirmpassword)}
+            helperText={touched.confirmpassword && errors.confirmpassword}
+            
           />
 
           <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>

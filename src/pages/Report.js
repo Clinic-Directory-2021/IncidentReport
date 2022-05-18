@@ -37,7 +37,7 @@ import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
-import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashboard/dashboardIncident';
+import { UserListHead, UserListToolbar, UserMoreMenu, UserMoreMenuReport } from '../sections/@dashboard/dashboardIncident';
 // mock
 import USERLIST from '../_mock/user';
 
@@ -49,6 +49,7 @@ const TABLE_HEAD = [
   { id: 'company', label: 'Incident Type', alignRight: false },
   { id: 'role', label: 'Section', alignRight: false },
   { id: 'role', label: 'Year Level', alignRight: false },
+  { id: 'isVerified', label: 'Status', alignRight: false },
   { id: '' },
 ];
 
@@ -172,23 +173,25 @@ export default function User() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-                                                           
-  return (
-    <Page title="Report">
+// PRINT BUTTON----------------------------------------------------------------------
 
+
+                                                         
+  return (
+    <Page title="Incidents Reports">
+    
       <Container>
-      
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Report
+            Reports
           </Typography>
 
 
           
 
-          <Button onClick={handleOpen} variant="contained" startIcon={<Iconify icon="eva:printer-outline" />}>
-            Print
-          </Button>
+          {/* <Button onClick={handleOpen} variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
+            File Report
+          </Button> */}
 
           
           <Modal
@@ -248,7 +251,7 @@ export default function User() {
                         selected={isItemSelected}
                         aria-checked={isItemSelected}
                       >
-                        
+                      
                         <TableCell style={{padding:'15px'}} component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
                             <Avatar alt={name} src={avatarUrl} />
@@ -261,10 +264,14 @@ export default function User() {
                         <TableCell align="left">{company}</TableCell>
                         <TableCell align="left">{role}</TableCell>
                         <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
-            
+                        <TableCell align="left">
+                          <Label variant="ghost" color={(status === 'close' && 'error') || 'success'}>
+                            {sentenceCase(status)}
+                          </Label>
+                        </TableCell>
 
                         <TableCell align="right">
-                          <UserMoreMenu />
+                          <UserMoreMenuReport />
                         </TableCell>
                       </TableRow>
                     );
@@ -301,6 +308,8 @@ export default function User() {
         </Card>
         
       </Container>
+
+      
       
     </Page>
     

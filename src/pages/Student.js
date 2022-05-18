@@ -1,17 +1,17 @@
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 import { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
-import TextField from '@mui/material/TextField';
-import * as Yup from 'yup';
-import { useFormik, Form, FormikProvider } from 'formik';
-import { useNavigate } from 'react-router-dom';
+import TextareaAutosize from '@mui/material/TextareaAutosize';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
+
+// material
 import {
-  IconButton,
-  InputAdornment,
   Card,
   Table,
   Stack,
@@ -24,13 +24,8 @@ import {
   Container,
   Typography,
   TableContainer,
-  TablePagination
+  TablePagination,
 } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
-
-
-// material
-
 // components
 import Page from '../components/Page';
 import Label from '../components/Label';
@@ -57,8 +52,8 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '30%',
-  height:'70%',
+  width: '50%',
+  height:'50%',
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
@@ -168,46 +163,9 @@ export default function User() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-// ADD EVALUATOR----------------------------------------------------------------------
-
-    const navigate = useNavigate();
-
-  const [showPassword, setShowPassword] = useState(false);
-
-  const RegisterSchema = Yup.object().shape({
-    firstName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('First name required'),
-    lastName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Last name required'),
-    email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-    password: Yup.string().required('Password is required'),
-    confirmpassword: Yup.string().required('Confirm Password is required'),
-    studentNumber: Yup.string().required('Student number is required'),
-    yearLevel: Yup.string().required('Year level is required'),
-    section: Yup.string().required('Section is required'),
-
-  });
-const formik = useFormik({
-  initialValues: {
-    firstName: '',
-    middleName:'',
-    lastName: '',
-    studentNumber: '',
-    email: '',
-    confirmpassword: '',
-    password: '',
-    yearLevel: '',
-    section: '',
-  },
-  validationSchema: RegisterSchema,
-  onSubmit: () => {
-    navigate('/dashboard', { replace: true });
-  },
-});
-
-const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
-
-
+                                                           
   return (
-    <Page title="List of Evaluators">
+    <Page title="Student">
 
 
 
@@ -215,15 +173,15 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
       
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-          List of Evaluators
+          Student
           </Typography>
 
 
           
 
-          <Button onClick={handleOpen} variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
+          {/* <Button onClick={handleOpen} variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
             Add Evaluator
-          </Button>
+          </Button> */}
 
           
           <Modal
@@ -237,58 +195,11 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
       >
     
         <Box sx={style}>
-
           <div>
-  
-        <div>
-        <FormikProvider value={formik}>
-        <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
-        <Stack spacing={3}>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            <TextField
-              fullWidth
-              label="First Name"
-              {...getFieldProps('firstName')}
-              error={Boolean(touched.firstName && errors.firstName)}
-              helperText={touched.firstName && errors.firstName}
+            <CKEditor
+            editor={ClassicEditor}
             />
-          </Stack>
-          <TextField
-            fullWidth
-            type="number"
-            label="Last Name"
-            {...getFieldProps('studentNumber')}
-            error={Boolean(touched.studentNumber && errors.studentNumber)}
-            helperText={touched.studentNumber && errors.studentNumber}
-          />
-
-          <TextField
-            fullWidth
-            autoComplete="username"
-            type="email"
-            label="Email address"
-            {...getFieldProps('email')}
-            error={Boolean(touched.email && errors.email)}
-            helperText={touched.email && errors.email}
-          />
-
-          <TextField
-            fullWidth
-            label="Section"
-            {...getFieldProps('section')}
-            error={Boolean(touched.section && errors.section)}
-            helperText={touched.section && errors.section}
-          />
-
-          <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
-            Add
-          </LoadingButton>
-        </Stack>
-      </Form>
-    </FormikProvider>
-        </div>
-    
-      </div>
+          </div>
 
         </Box>
         </Modal>
@@ -355,6 +266,7 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
                     </TableRow>
                   )}
                 </TableBody>
+
                 {isUserNotFound && (
                   <TableBody>
                     <TableRow>

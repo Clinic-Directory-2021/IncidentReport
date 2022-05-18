@@ -11,6 +11,8 @@ import Register from './pages/Register';
 import Evaluators from './pages/Evaluators';
 import Report from './pages/Report';
 import IndividualReport from './pages/IndividualReport';
+import Student from './pages/Student';
+
 
 // ----------------------------------------------------------------------
 
@@ -22,6 +24,7 @@ export default function Router() {
       children: [
         { path: 'dashboard', element: <Dashboard /> },
         { path: 'evaluators', element: <Evaluators/> },
+        { path: 'student', element: <Student/> },
         { path: 'incidentsReports', element: <IncidentsReports /> },
         { path: 'report', element: <Report /> },
         

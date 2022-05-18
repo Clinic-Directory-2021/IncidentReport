@@ -1,19 +1,36 @@
 import { useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { useReactToPrint } from "react-to-print";
 // material
 import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText } from '@mui/material';
 // component
 import Iconify from '../../../components/Iconify';
 
 
+
 // ----------------------------------------------------------------------
 
-export default function UserMoreMenu() {
+
+export default function UserMoreMenuReport() {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+
+
   return (
     <>
+
+          
+          <div ref={componentRef} className="card">
+          <li> Name : <span> Dr Andrew C S Koh </span> </li>
+          </div>
+  
+
+
       <IconButton ref={ref} onClick={() => setIsOpen(true)}>
         <Iconify icon="eva:more-vertical-fill" width={20} height={20} />
       </IconButton>
@@ -37,11 +54,13 @@ export default function UserMoreMenu() {
       
         <MenuItem sx={{ color: 'text.secondary' }}>
           <ListItemIcon>
-            <Iconify icon="eva:trash-2-outline" width={24} height={24} />
+            <Iconify icon="eva:printer-outline" width={24} height={24} />
           </ListItemIcon>
-          <ListItemText primary="Delete" primaryTypographyProps={{ variant: 'body2' }} />
+          <ListItemText onClick={handlePrint} primary="Print" primaryTypographyProps={{ variant: 'body2' }} />
         </MenuItem>
       </Menu>
     </>
   );
 }
+
+

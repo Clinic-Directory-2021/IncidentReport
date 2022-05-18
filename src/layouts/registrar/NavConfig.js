@@ -12,6 +12,11 @@ const navConfig = [
     icon: getIcon('eva:pie-chart-outline'),
   },
   {
+    title: 'Student',
+    path: '/registrar/Student',
+    icon: getIcon('eva:person-outline'),
+  },
+  {
     title: 'Evaluators',
     path: '/registrar/evaluators',
     icon: getIcon('eva:people-fill'),
