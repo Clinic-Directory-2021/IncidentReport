@@ -11,6 +11,18 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Avatar from '@mui/material/Avatar';
 
+import CssBaseline from '@mui/material/CssBaseline';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import Paper from '@mui/material/Paper';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemText from '@mui/material/ListItemText';
+
+
+
+
 
 
 
@@ -159,6 +171,8 @@ export default function User() {
       •
     </Box>
   );
+
+
   
 
                                                            
@@ -246,15 +260,16 @@ export default function User() {
         boxShadow:"0 14px 28px rgba(0,0,0,0.25), \n\t\t\t0 10px 10px rgba(0,0,0,0.22)"
       }}>
 
+    <Box style={{maxHeight: '100%', overflow: 'auto',}}>
       <Box style={{
         padding:'20px',
         display:'flex', 
       flexDirection:'row'}}>
     <Avatar alt="Remy Sharp" src="/static/illustrations/mikey.jpg" />
     &nbsp;&nbsp;&nbsp;
-    <Box>
-    <Card sx={{ minWidth: 450 }}>
 
+    <Box style={{width:'100%'}}>
+    <Card>
       <CardContent style={{fontWeight:'bold',color:'blue',display:'flex', justifyContent:'space-between' }}>
       <text>Mike Angello B. Villarta</text>
       <text>10:00 AM</text>
@@ -269,52 +284,77 @@ export default function User() {
     <Box style={{
         padding:'20px',
         display:'flex', 
-       flexDirection:'row',
-       justifyContent:'flex-end'}}>
-
+      flexDirection:'row'}}>
+    <Avatar alt="Remy Sharp" src="/static/illustrations/Ken.jpg" />
     &nbsp;&nbsp;&nbsp;
-    <Box>
-    <Card sx={{ minWidth: 450 }}>
 
+    <Box style={{width:'100%'}}>
+    <Card>
       <CardContent style={{fontWeight:'bold',color:'blue',display:'flex', justifyContent:'space-between' }}>
       <text>Pacheco Ken</text>
       <text>10:05 AM</text>
       </CardContent>
       <CardContent style={{marginTop:-20}}>
-      <text>I love girls</text>
+      <text>I Love  Big Dick</text>
       </CardContent>
     </Card>
     </Box>
-    &nbsp;&nbsp;&nbsp;
-    <Avatar alt="Remy Sharp" src="/static/illustrations/Ken.jpg" />
     </Box>
-
-
-
     <Box style={{
+        padding:'20px',
+        display:'flex', 
+      flexDirection:'row'}}>
+    <Avatar alt="Remy Sharp" src="/static/illustrations/Ken.jpg" />
+    &nbsp;&nbsp;&nbsp;
+
+    <Box style={{width:'100%'}}>
+    <Card>
+      <CardContent style={{fontWeight:'bold',color:'blue',display:'flex', justifyContent:'space-between' }}>
+      <text>Pacheco Ken</text>
+      <text>10:05 AM</text>
+      </CardContent>
+      <CardContent style={{marginTop:-20}}>
+      <text>I Love  Big Dick</text>
+      </CardContent>
+    </Card>
+    </Box>
+    </Box>
+    </Box>
+    </Box>
+    
+
+
+      
+      
+      
+      {/* Add comment and Post Button */}
+      &nbsp;&nbsp;&nbsp;
+      <Box
+      style={{
+        borderRadius:'15px',
+        width: '90%',
+        height: 100,
+        backgroundColor:'#f7f7f7',
+        boxShadow:"0 14px 28px rgba(0,0,0,0.25), \n\t\t\t0 10px 10px rgba(0,0,0,0.22)"
+      }}>
+      <Box style={{
       padding:'20px',
       display:'flex', 
       flexDirection:'row'}}>
-      
-
-      
-      
-    <TextField 
-      
+      <TextField 
       placeholder='Add a comment'
-      style={{backgroundColor:'white',top:30,width:'90%'}}
+      style={{backgroundColor:'white',top:5,width:'80%'}}
       id="outlined-multiline-static" 
       multiline 
       rows={1} />
-      
       &nbsp;&nbsp;&nbsp;
-      
-      <Button style={{top:30,width:'10%'}}
+      <Button style={{top:5,width:'20%'}}
       variant="contained" startIcon={<Iconify icon="eva:arrow-forward-outline" />}>
       Post</Button>
+      </Box>
+      </Box>
 
-      </Box>
-      </Box>
+
       </Container>
       
     </Page>
