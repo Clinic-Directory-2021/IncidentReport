@@ -60,8 +60,7 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '50%',
-  height:'55%',
+  height:450,
 
   bgcolor: 'background.paper',
   border: '2px solid #ffffff',
@@ -210,7 +209,7 @@ export default function User() {
             editor={ClassicEditor}
             />
           </div>
-          <Box style={{marginTop:'25px', marginBottom:'20px'}}>
+          <Box style={{marginTop:'20px', marginBottom:'20px'}}>
           <Button variant="contained">Contained</Button>
           </Box>
 
