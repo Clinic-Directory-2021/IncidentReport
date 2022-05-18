@@ -44,11 +44,24 @@ import USERLIST from '../_mock/user';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'First Name', alignRight: false },
-  { id: 'role', label: 'Last Name', alignRight: false },
-  { id: 'role', label: 'Email', alignRight: false },
-  { id: '' },
+  {id: 'image', label: 'Profile', alignRight: false },
+  { id: 'firstname', label: 'First name', alignRight: false },
+  { id: 'lastname', label: 'Last name', alignRight: false },
+  { id: 'email', label: 'Email', alignRight: false },
 ];
+
+const DATA = [
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth1", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth2", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth3", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth4", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth5", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth6", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth7", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth8", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth9", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth10", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+]
 
 
 // MODAL ----------------------------------------------------------------------
@@ -308,23 +321,29 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, 
-                            name, 
-                            role, 
-                            status, 
-                            company, 
-                            avatarUrl, 
-                            isVerified
+                  {DATA.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                    // const { id, 
+                    //         name, 
+                    //         role, 
+                    //         status, 
+                    //         company, 
+                    //         avatarUrl, 
+                    //         isVerified
                             
                             
-                            } = row;
-                    const isItemSelected = selected.indexOf(name) !== -1;
+                    //         } = row;
+                    const {
+                      image,
+                      firstname,
+                      lastname,
+                      email
+                    } = row
+                    const isItemSelected = selected.indexOf(firstname) !== -1;
 
                     return (
                       <TableRow
                         hover
-                        key={id}
+                        key={firstname}
                         tabIndex={-1}
                         // role="checkbox"
                         selected={isItemSelected}
@@ -333,14 +352,14 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
                         
                         <TableCell style={{padding:'15px'}} component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={avatarUrl} />
-                            <Typography variant="subtitle2" noWrap>
-                              {name}
-                            </Typography>
+                            <Avatar alt={'profle_picture'} src={image} />
                           </Stack>
                         </TableCell>
-                        <TableCell align="left">{company}</TableCell>
-                        <TableCell align="left">{role}</TableCell>
+                        <TableCell style={{padding:'15px'}} component="th" scope="row" padding="none">
+                              {firstname}
+                        </TableCell>
+                        <TableCell align="left">{lastname}</TableCell>
+                        <TableCell align="left">{email}</TableCell>
                         <TableCell align="right">
                           <UserMoreMenu />
                         </TableCell>
@@ -369,7 +388,7 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={DATA.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

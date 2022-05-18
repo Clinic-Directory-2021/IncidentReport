@@ -6,12 +6,30 @@ import { useFormik, Form, FormikProvider } from 'formik';
 import { Link, Stack, Checkbox, TextField, IconButton, InputAdornment, FormControlLabel } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // component
+import { auth } from "src/firebase/firebase-config";
+import { signInWithEmailAndPassword } from "firebase/auth"
 import Iconify from '../../../components/Iconify';
+
 
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
   const navigate = useNavigate();
+
+  const LoginAuth = (email, password) =>{
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed in 
+      const user = userCredential.user;
+      navigate('/registrar/dashboard', { replace: true });
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorMessage)
+    });
+  }
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -28,7 +46,9 @@ export default function LoginForm() {
     },
     validationSchema: LoginSchema,
     onSubmit: () => {
-      navigate('/dashboard', { replace: true });
+      
+      LoginAuth(formik.values.email,formik.values.password)
+        
     },
   });
 
@@ -85,11 +105,11 @@ export default function LoginForm() {
 
 
         
-        <Link variant="subtitle2" component={RouterLink} to="/registrar/dashboard">    
+        {/* <Link variant="subtitle2" component={RouterLink} to="/registrar/dashboard">     */}
         <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
           Login
         </LoadingButton>
-       </Link>
+       {/* </Link> */}
 
 
       </Form>

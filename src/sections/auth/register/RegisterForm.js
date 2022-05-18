@@ -6,7 +6,11 @@ import Autocomplete from '@mui/material/Autocomplete';
 // material
 import { Stack, TextField, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import Snackbar from '@mui/material/Snackbar';
 // component
+import { auth,firestore } from 'src/firebase/firebase-config';
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore"; 
 import Iconify from '../../../components/Iconify';
 
 
@@ -14,6 +18,34 @@ import Iconify from '../../../components/Iconify';
 
 export default function RegisterForm() {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  const RegisterAuth = (data) =>{
+    
+    createUserWithEmailAndPassword(auth, data.email, data.password)
+    .then(async(userCredential) => {
+      // Signed in 
+      const user = userCredential.user;
+        await setDoc(doc(firestore, "users", user.uid),data).then(()=>{
+        setOpen(true);
+        navigate('/login', { replace: true });
+      });
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorMessage)
+      // ..
+    });
+  }
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -26,9 +58,6 @@ export default function RegisterForm() {
     studentNumber: Yup.string().required('Student number is required'),
     yearLevel: Yup.string().required('Year level is required'),
     section: Yup.string().required('Section is required'),
-   
-  
-
   });
 
   const formik = useFormik({
@@ -45,7 +74,7 @@ export default function RegisterForm() {
     },
     validationSchema: RegisterSchema,
     onSubmit: () => {
-      navigate('/dashboard', { replace: true });
+    RegisterAuth(formik.values)
     },
   });
 
@@ -170,6 +199,7 @@ export default function RegisterForm() {
           <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
             Register
           </LoadingButton>
+          <Snackbar open={open} autoHideDuration={6000} message="Succesfuly created an account. Login your account" onClose={handleClose} />
         </Stack>
       </Form>
     </FormikProvider>
