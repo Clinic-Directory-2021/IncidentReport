@@ -305,6 +305,7 @@ export default function User() {
         display:'flex', 
       flexDirection:'row'}}>
     <Avatar alt="Remy Sharp" src="/static/illustrations/Ken.jpg" />
+    
     &nbsp;&nbsp;&nbsp;
 
     <Box style={{width:'100%'}}>
