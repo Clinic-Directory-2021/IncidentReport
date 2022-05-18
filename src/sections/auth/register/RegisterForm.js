@@ -42,6 +42,7 @@ export default function RegisterForm() {
             password:base64.encode(data.password)
           }).then(()=>{
           setOpen(true);
+          setMessage('Successfully Addeded Evaluator')
           setLoading(false)
           navigate('/login', { replace: true });
         });

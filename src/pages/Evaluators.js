@@ -24,12 +24,18 @@ import {
   Container,
   Typography,
   TableContainer,
-  TablePagination
+  TablePagination,
+  Snackbar
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 
 // material
+
+// firebase
+import { auth, firestore } from 'src/firebase/firebase-config';
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc, collection, query, where, onSnapshot } from "firebase/firestore"; 
 
 // components
 import Page from '../components/Page';
@@ -41,10 +47,13 @@ import { UserListHead, UserListToolbar, UserListToolbarEva, UserMoreMenu } from 
 // mock
 import USERLIST from '../_mock/user';
 
+
+const base64 = require('base-64');
+
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  {id: 'image', label: 'Profile', alignRight: false },
+  {id: 'image', label: 'Image', alignRight: false },
   { id: 'firstname', label: 'First name', alignRight: false },
   { id: 'lastname', label: 'Last name', alignRight: false },
   { id: 'email', label: 'Email', alignRight: false },
@@ -97,6 +106,7 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
+
 function applySortFilter(array, comparator, query) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -122,6 +132,24 @@ export default function User() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [evaluatorData, setEvaluatorData] = useState([])
+
+  const getAllDocuments = (db,collectionName) =>{
+    const collectionList = query(collection(db, collectionName));
+    const unsubscribe = onSnapshot(collectionList, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+          temp.push(doc.data());
+      });
+      setEvaluatorData(temp)
+    });
+  }
+
+  React.useEffect(() => {
+    getAllDocuments(firestore,"evaluators")
+  }, [])
+
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -185,35 +213,66 @@ export default function User() {
     const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [snackOpen, setSnackOpen] = React.useState(false);
+  const [loading, setLoading] = useState(false)
+  const [message,setMessage] = useState('')
 
-  const RegisterSchema = Yup.object().shape({
+  const EvaluatorAuth = (data) =>{
+    setSnackOpen(true);
+    if(data.password === data.confirmpassword){
+      createUserWithEmailAndPassword(auth, data.email, '12345678')
+      .then(async(userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+          await setDoc(doc(firestore, "evaluators", user.uid),{
+            uid:user.uid,
+            firstName:data.firstName,
+            lastName:data.lastName,
+            email:data.email,
+            password:base64.encode('12345678')
+          }).then(()=>{
+          setSnackOpen(true);
+          setMessage('Successfully Added Evaluator')
+          setLoading(false)
+          setOpen(false);
+        });
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        setSnackOpen(true);
+        setMessage(errorMessage)
+        setLoading(false)
+        // ..
+      });
+    }
+    else{
+      setSnackOpen(true);
+      setMessage("Password and Confirm password does not matched.")
+      setLoading(false)
+    }
+    
+  }
+
+  const EvaluatorsSchema = Yup.object().shape({
     firstName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('First name required'),
     lastName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Last name required'),
     email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-    password: Yup.string().required('Password is required'),
-    confirmpassword: Yup.string().required('Confirm Password is required'),
-    studentNumber: Yup.string().required('Student number is required'),
-    yearLevel: Yup.string().required('Year level is required'),
-    section: Yup.string().required('Section is required'),
 
   });
 const formik = useFormik({
   initialValues: {
     firstName: '',
-    middleName:'',
     lastName: '',
-    studentNumber: '',
-    email: '',
-    confirmpassword: '',
-    password: '',
-    yearLevel: '',
-    section: '',
+    email:'',
   },
-  validationSchema: RegisterSchema,
+  validationSchema: EvaluatorsSchema,
   onSubmit: () => {
-    navigate('/dashboard', { replace: true });
+    EvaluatorAuth(formik.values) 
   },
 });
+
+
 
 const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
 
@@ -266,16 +325,15 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
           </Stack>
           <TextField
             fullWidth
-            type="number"
             label="Last Name"
-            {...getFieldProps('studentNumber')}
-            error={Boolean(touched.studentNumber && errors.studentNumber)}
-            helperText={touched.studentNumber && errors.studentNumber}
+            {...getFieldProps('lastName')}
+            error={Boolean(touched.lastName && errors.lastName)}
+            helperText={touched.lastName && errors.lastName}
           />
 
           <TextField
             fullWidth
-            autoComplete="username"
+            autoComplete="email"
             type="email"
             label="Email address"
             {...getFieldProps('email')}
@@ -283,15 +341,7 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
             helperText={touched.email && errors.email}
           />
 
-          <TextField
-            fullWidth
-            label="Section"
-            {...getFieldProps('section')}
-            error={Boolean(touched.section && errors.section)}
-            helperText={touched.section && errors.section}
-          />
-
-          <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
+          <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={loading}>
             Add
           </LoadingButton>
         </Stack>
@@ -321,7 +371,7 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {DATA.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                  {evaluatorData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                     // const { id, 
                     //         name, 
                     //         role, 
@@ -333,17 +383,18 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
                             
                     //         } = row;
                     const {
+                      uid,
                       image,
-                      firstname,
-                      lastname,
-                      email
+                      firstName,
+                      lastName,
+                      email,
                     } = row
-                    const isItemSelected = selected.indexOf(firstname) !== -1;
+                    const isItemSelected = selected.indexOf(firstName) !== -1;
 
                     return (
                       <TableRow
                         hover
-                        key={firstname}
+                        key={uid}
                         tabIndex={-1}
                         // role="checkbox"
                         selected={isItemSelected}
@@ -356,12 +407,12 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
                           </Stack>
                         </TableCell>
                         <TableCell style={{padding:'15px'}} component="th" scope="row" padding="none">
-                              {firstname}
+                              {firstName}
                         </TableCell>
-                        <TableCell align="left">{lastname}</TableCell>
+                        <TableCell align="left">{lastName}</TableCell>
                         <TableCell align="left">{email}</TableCell>
                         <TableCell align="right">
-                          <UserMoreMenu />
+                          <UserMoreMenu id={uid}/>
                         </TableCell>
                       </TableRow>
                     );
@@ -388,7 +439,7 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={DATA.length}
+            count={evaluatorData.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -397,7 +448,7 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
         </Card>
         
       </Container>
-      
+      <Snackbar open={snackOpen} autoHideDuration={6000} message={message} />
     </Page>
     
   );

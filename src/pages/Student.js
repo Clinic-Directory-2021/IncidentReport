@@ -257,7 +257,7 @@ export default function User() {
                     return (
                       <TableRow
                         hover
-                        key={firstName}
+                        key={uid}
                         tabIndex={-1}
                         // role="checkbox"
                         selected={isItemSelected}
