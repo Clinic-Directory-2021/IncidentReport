@@ -1,5 +1,5 @@
 import { filter } from 'lodash';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
@@ -35,11 +35,16 @@ import {
   Typography,
 
 } from '@mui/material';
+import { getIndividualData } from 'src/sections/@dashboard/dashboardIncident/individualModel';
+import { firestore } from 'src/firebase/firebase-config';
+import { collection, query, where, onSnapshot, doc, setDoc } from "firebase/firestore";
+import { getFirstName, getLastName, getUserType } from 'src/sections/auth/login/LoginModel';
 // components
 import Page from '../components/Page';
 import Iconify from '../components/Iconify';
 // mock
 import USERLIST from '../_mock/user';
+
 
 // MODAL ----------------------------------------------------------------------
 const style = {
@@ -156,9 +161,12 @@ export default function User() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const commentBox = useRef(null)
+  const [disable, setDisable] = React.useState(false)
 
   const [value, setValue] = React.useState('Controlled');
-
+  
+  const specificDetail = getIndividualData().specificDetail.replace(/[<p></p>]/g,"")
   const handleChange = (event) => {
     setValue(event.target.value);
   };
@@ -171,11 +179,44 @@ export default function User() {
       •
     </Box>
   );
+  const [comment, setComment] = React.useState([])
+  const [reply, setReply] = React.useState('')
 
+  const handleType = (event) =>{
+    setReply(event.target.value)
+  }
+  const sendReply = async(replyData) =>{
+    const incidentDoc = doc(firestore,"incidents",getIndividualData().incidentId.toString())
+    const commentCollection = collection(incidentDoc, "comments")
+    const date = new Date()
+    const commentId = Date.parse(date)
+    const fullName = getUserType() === 'Admin' ? "admin" : `${getFirstName()} ${getLastName()}`
+    const commentData = {
+      name: fullName,
+      date: `${(date.getMonth() + 1)}/${date.getDate()}/${date.getFullYear()}`,
+      time: `${date.getHours()}:${date.getMinutes()}`,
+      message: replyData,
+      comment_id: commentId,
+    }
+    await setDoc(doc(commentCollection, commentId.toString()),commentData);
+  }
 
+  const scrollToBottom = () => {
+    commentBox.current?.scrollIntoView({ behavior: "smooth" })
+  }
   
-
-                                                           
+  React.useEffect(() => {
+    scrollToBottom()
+    const q = query(collection(firestore, "incidents", getIndividualData().incidentId.toString(),"comments"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+          temp.push(doc.data());
+      });
+      setComment(temp)
+    });
+  }, [])
+  
   return (
     <Page title="Individual Report">
 
@@ -186,15 +227,15 @@ export default function User() {
           Individual Report
           </Typography>
          <Box style={{marginRight:'115px'}}>
-          <Button onClick={handleOpen} variant="contained" startIcon={<Iconify icon="eva:checkmark-circle-2-outline" />}>
+          <Button variant="contained" startIcon={<Iconify icon="eva:checkmark-circle-2-outline" />}>
             Mark as resolved
           </Button>
 
           &nbsp;
           &nbsp;
-          <Button onClick={handleOpen} variant="contained" startIcon={<Iconify icon="eva:person-outline" />}>
+          {/* <Button onClick={handleOpen} variant="contained" startIcon={<Iconify icon="eva:person-outline" />}>
             Individual Report Response/Response Form
-          </Button>
+          </Button> */}
         </Box>
           <Modal
         open={open}
@@ -225,14 +266,18 @@ export default function User() {
         flexDirection:'column',
         padding:20,
         }}>
-      <text>Email Address:</text>
-      <text>Full Name:</text>
-      <text>Student No:</text>
-      <text>Section:</text>
-      <text>Injury and Time Incident Report:</text>
+      <text>Email Address: {getIndividualData().email}</text>
+      <text>Full Name: {getIndividualData().studentName}</text>
+      <text>Student No:{getIndividualData().studentNumber}</text>
+      <text>Section: {getIndividualData().section}</text>
+      <text>Incident Type: {getIndividualData().incidentType}</text>
       </Box>
+      <div>
+        
+      </div>
       <TextField 
       placeholder='Possible Reason...'
+      value={specificDetail}
       style={{
         placeholder:'qeqeq',
         top:-20,
@@ -245,14 +290,13 @@ export default function User() {
 
       <Button
       style={{top:-20,left:'20px'}} 
-      variant="contained" startIcon={<Iconify icon="eva:eye-outline" />}>
-      View Attached File</Button>
+      variant="contained" startIcon={<Iconify icon="eva:download-outline" />}>
+      Download Attached File</Button>
       </Box>
       
 
 
   {/* Private Comment---------------------------------------------------------------------- */}
-
     <Box
       style={{
         borderRadius:'15px',
@@ -261,35 +305,46 @@ export default function User() {
         backgroundColor:'#f7f7f7',
         boxShadow:"0 14px 28px rgba(0,0,0,0.25), \n\t\t\t0 10px 10px rgba(0,0,0,0.22)"
       }}>
-
-    <Box style={{maxHeight: '100%', overflow: 'auto',}}>
-      <Box style={{
-        padding:'20px',
-        display:'flex', 
-      flexDirection:'row'}}>
-    <Avatar alt="Remy Sharp" src="/static/illustrations/mikey.jpg" />
+        <Box style={{maxHeight: '100%', overflow: 'auto',}} ref={commentBox}>
+{comment.length > 0 ?
+  comment.map((data, key)=>{
+    return(
+     <Box style={{
+      padding:'20px',
+      display:'flex', 
+      flexDirection:'row'}}
+      key={key}
+      >
+      <Avatar alt="Remy Sharp" src="" />
     &nbsp;&nbsp;&nbsp;
-
     <Box style={{width:'100%'}}>
-    <Card>
-      <CardContent style={{fontWeight:'bold',color:'blue',display:'flex', justifyContent:'space-between' }}>
-      <text>Mike Angello B. Villarta</text>
-      <text>10:00 AM</text>
-      </CardContent>
-      <CardContent style={{marginTop:-20}}>
-      <text>Pogi ko</text>
-      </CardContent>
-    </Card>
+      <Card>
+        <CardContent style={{fontWeight:'bold',color:'blue',display:'flex', justifyContent:'space-between' }}>
+        <text>{data.name}</text>
+        <div>
+        <text>{data.date}</text>
+        <text> </text>
+        <text>{data.time}</text>
+        </div>
+        </CardContent>
+        <CardContent style={{marginTop:-20}}>
+        <text>{data.message}</text>
+        </CardContent>
+      </Card>
     </Box>
-    </Box>
+  </Box> 
+  )
+  })
+    :
+    <></>
+}
 
-    <Box style={{
+    {/* <Box style={{
         padding:'20px',
         display:'flex', 
       flexDirection:'row'}}>
-    <Avatar alt="Remy Sharp" src="/static/illustrations/Ken.jpg" />
+    <Avatar alt="Remy Sharp" src="" />
     &nbsp;&nbsp;&nbsp;
-
     <Box style={{width:'100%'}}>
     <Card>
       <CardContent style={{fontWeight:'bold',color:'blue',display:'flex', justifyContent:'space-between' }}>
@@ -301,8 +356,9 @@ export default function User() {
       </CardContent>
     </Card>
     </Box>
-    </Box>
-    <Box style={{
+    </Box> */}
+
+    {/* <Box style={{
         padding:'20px',
         display:'flex', 
       flexDirection:'row'}}>
@@ -321,7 +377,8 @@ export default function User() {
       </CardContent>
     </Card>
     </Box>
-    </Box>
+    </Box> */}
+
     </Box>
     </Box>
     
@@ -345,15 +402,22 @@ export default function User() {
       display:'flex', 
       flexDirection:'row'}}>
       <TextField 
-      placeholder='Add a comment'
+      placeholder='Add a response/resolution'
       style={{backgroundColor:'white',top:5,width:'80%'}}
       id="outlined-multiline-static" 
       multiline 
-      rows={1} />
+      rows={1} 
+      value={reply}
+      onChange={handleType}
+      />
       &nbsp;&nbsp;&nbsp;
       <Button style={{top:5,width:'20%'}}
+      onClick={()=>{
+        sendReply(reply)
+        setReply('')
+      }}
       variant="contained" startIcon={<Iconify icon="eva:arrow-forward-outline" />}>
-      Post</Button>
+      Send Response</Button>
       </Box>
       </Box>
 
