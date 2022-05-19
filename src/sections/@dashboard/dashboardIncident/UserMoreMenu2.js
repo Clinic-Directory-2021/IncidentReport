@@ -88,7 +88,11 @@ export default function UserMoreMenu2(props) {
         </MenuItem> */}
 
         {getUserType() === 'Admin' ?
-        <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>
+        <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}
+        onClick={()=>{
+          DeleteUser(firestore,"users",props.id)
+        }}
+        >
           <ListItemIcon>
             <Iconify icon="eva:archive-outline" width={24} height={24} />
           </ListItemIcon>

@@ -116,7 +116,9 @@ export default function UserMoreMenu(props) {
         }
 
         {getUserType() === 'Student' ?
-        <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }} onClick={()=>{DeleteIncident(props.data.incidentId)}}>
+        <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }} onClick={()=>{
+            DeleteIncident(props.data.incidentId)
+          }}>
           <ListItemIcon>
             <Iconify icon="eva:archive-outline" width={24} height={24} />
           </ListItemIcon>
