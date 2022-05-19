@@ -1,17 +1,98 @@
 import * as Yup from 'yup';
-import { useState } from 'react';
+import React,{ useState,forwardRef } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useFormik, Form, FormikProvider } from 'formik';
+
 // material
 import { Link, Stack, Checkbox, TextField, IconButton, InputAdornment, FormControlLabel } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+
+// Validation import
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+
 // component
+import { auth, firestore } from "src/firebase/firebase-config";
+import { signInWithEmailAndPassword } from "firebase/auth"
+import { doc, getDoc } from "firebase/firestore";
 import Iconify from '../../../components/Iconify';
+import { getUserType, setEmail, setFirstName, setLastName, setMiddleName, setSection, setStudentNumber, setUserType, setYear } from './LoginModel';
+
 
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false)
+  const [message,setMessage] = useState('')
+  const [error, setError] = useState(false)
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setError(false);
+  };
+  const LoginAuth = async(email, password) =>{
+    setLoading(true)
+    signInWithEmailAndPassword(auth, email, password)
+    .then(async(userCredential) => {
+      // Signed in 
+      const user = userCredential.user;
+      const userDoc = doc(firestore, "users", user.uid);
+      const userSnap = await getDoc(userDoc)
+      setLoading(false)
+      if(email === 'incident.report.web.2022@gmail.com'){
+        setUserType('Admin')
+        setFirstName('BulSU')
+        setLastName('Admin')
+        setEmail(email)
+      }
+      else{
+        if (userSnap.exists()){
+          if(userSnap.data().userType === 'Student'){
+            setStudentNumber(userSnap.data().studentNumber)
+            setYear(userSnap.data().yearLevel)
+            setSection(userSnap.data().section)
+            setMiddleName(userSnap.data().middleName)
+            setUserType(userSnap.data().userType)
+            setFirstName(userSnap.data().firstName)
+            setLastName(userSnap.data().lastName)
+            setEmail(email)
+          }
+          else{
+            setUserType(userSnap.data().userType)
+            setFirstName(userSnap.data().firstName)
+            setMiddleName('')
+            setLastName(userSnap.data().lastName)
+            setEmail(email)
+          }
+          
+        }else{
+          console.log("No such document!");
+        }
+      }
+      if(getUserType() === 'Admin')
+      {
+        navigate('/registrar/dashboard', { replace: true });
+      }
+      else if(getUserType() === 'Student'){
+        navigate('/student/incidentsReports', { replace: true });
+      }
+      else{
+        navigate('/evaluator/incidentsReports', { replace: true });
+      }
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      setMessage(errorMessage)
+      setError(true)
+      setLoading(false)
+    });
+  }
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -28,7 +109,9 @@ export default function LoginForm() {
     },
     validationSchema: LoginSchema,
     onSubmit: () => {
-      navigate('/dashboard', { replace: true });
+      
+      LoginAuth(formik.values.email,formik.values.password)
+        
     },
   });
 
@@ -85,11 +168,14 @@ export default function LoginForm() {
 
 
         
-        <Link variant="subtitle2" component={RouterLink} to="/registrar/dashboard">    
-        <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
+        {/* <Link variant="subtitle2" component={RouterLink} to="/registrar/dashboard">     */}
+        <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={loading}>
           Login
         </LoadingButton>
-       </Link>
+        <Snackbar open={error} autoHideDuration={6000}  onClose={handleClose}>
+        <Alert severity="error">{message}</Alert>
+        </Snackbar>
+       {/* </Link> */}
 
 
       </Form>

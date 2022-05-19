@@ -27,16 +27,40 @@ const RootStyle = styled(Toolbar)(({ theme }) => ({
 
 
 // ----------------------------------------------------------------------
-
-const top100Films = [
-  { label: 'The Shawshank Redemption', year: 1994 },
-  { label: 'The Godfather', year: 1972 },
-  { label: 'The Godfather: Part II', year: 1974 },
-  { label: 'The Dark Knight', year: 2008 },
-  { label: '12 Angry Men', year: 1957 },
-  { label: "Schindler's List", year: 1993 },
-  { label: 'Pulp Fiction', year: 1994 },
+const incidentType = [
+  { id:'1', label: 'Remaining Balance'},
+  { id:'2', label: 'Failed a subject'},
+  { id:'3', label: 'Adding/Changing subject'},
+  { id:'4', label: 'Subjects with INC'},
+  { id:'5', label: 'Subjects from lower year level not taken yet'},
+  { id:'6', label: 'Subjects that are not available on the current semester not yet taken '},
+  { id:'7', label: 'Others'},
 ];
+
+const section = [
+  { id:'1', label: 'A'},
+  { id:'2', label: 'B'},
+  { id:'3', label: 'C'},
+  { id:'4', label: 'D'},
+  { id:'5', label: 'E'},
+  { id:'6', label: 'F'},
+  { id:'7', label: 'G'},
+];
+
+const yearLevel = [
+  { id:'1', label: '1'},
+  { id:'2', label: '2'},
+  { id:'3', label: '3'},
+  { id:'4', label: '4'},
+];
+
+const status = [
+  { id:'1', label: 'Open'},
+  { id:'2', label: 'On process'},
+  { id:'3', label: 'Close'},
+];
+
+
 
 
 
@@ -61,7 +85,7 @@ UserListToolbar.propTypes = {
   onFilterName: PropTypes.func,
 };
 
-export default function UserListToolbar({ numSelected, filterName, onFilterName }) {
+export default function UserListToolbar({ numSelected, filterName, onFilterName, onFilterIncident, onFilterYear, onFilterSection, onFilterStatus }) {
   return (
 
   
@@ -73,7 +97,7 @@ export default function UserListToolbar({ numSelected, filterName, onFilterName 
         }),
       }}
     >
-      {numSelected > 0 ? (
+      {/* {numSelected > 0 ? (
         <Typography component="div" variant="subtitle1">
           {numSelected} selected
         </Typography>
@@ -89,35 +113,39 @@ export default function UserListToolbar({ numSelected, filterName, onFilterName 
           }
         />
         
-      )}
+      )} */}
         
       <Autocomplete
       disablePortal
       id="combo-box-demo"
-      options={top100Films}
+      options={incidentType}
       sx={{ width: 200 }}
       renderInput={(params) => <TextField {...params} label="Incident Type" />}
+      onInputChange={onFilterIncident}
     />
     <Autocomplete
       disablePortal
       id="combo-box-demo"
-      options={top100Films}
+      options={section}
       sx={{ width: 200 }}
       renderInput={(params) => <TextField {...params} label="Section" />}
+      onInputChange={onFilterSection}
     />
     <Autocomplete
       disablePortal
       id="combo-box-demo"
-      options={top100Films}
+      options={yearLevel}
       sx={{ width: 200 }}
       renderInput={(params) => <TextField {...params} label="Year Level" />}
+      onInputChange={onFilterYear}
     />
     <Autocomplete
       disablePortal
       id="combo-box-demo"
-      options={top100Films}
+      options={status}
       sx={{ width: 200 }}
       renderInput={(params) => <TextField {...params} label="Status" />}
+      onInputChange={onFilterStatus}
     />
   
   

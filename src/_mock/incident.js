@@ -1,8 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { sample } from 'lodash';
-import { firestore } from 'src/firebase/firebase-config';
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc, collection, query, where, onSnapshot } from "firebase/firestore";
+
 // ----------------------------------------------------------------------
 
 const users = [...Array(24)].map((_, index) => ({

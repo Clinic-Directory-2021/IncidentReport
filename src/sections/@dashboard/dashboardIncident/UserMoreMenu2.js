@@ -18,7 +18,7 @@ const base64 = require('base-64');
 
 // ----------------------------------------------------------------------
 
-export default function UserMoreMenu(props) {
+export default function UserMoreMenu2(props) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -70,7 +70,7 @@ export default function UserMoreMenu(props) {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        {getUserType() !== 'Student' ?
+        {/* {getUserType() !== 'Student' ?
         <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>
           <ListItemIcon>
             <Iconify icon="eva:bookmark-outline" width={24} height={24} />
@@ -85,9 +85,9 @@ export default function UserMoreMenu(props) {
             <Iconify icon="eva:eye-outline" width={24} height={24} />
           </ListItemIcon>
           <ListItemText primary="View" primaryTypographyProps={{ variant: 'body2' }} />
-        </MenuItem>
+        </MenuItem> */}
 
-        {getUserType() === 'Student' ?
+        {getUserType() === 'Admin' ?
         <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>
           <ListItemIcon>
             <Iconify icon="eva:archive-outline" width={24} height={24} />

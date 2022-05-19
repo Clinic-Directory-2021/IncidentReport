@@ -4,16 +4,24 @@ import { Link as RouterLink, useLocation } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
 import { Box, Link, Button, Drawer, Typography, Avatar, Stack } from '@mui/material';
+
+// Login Model
+import { getEmail, getFirstName, getLastName, getMiddleName, getUserType } from 'src/sections/auth/login/LoginModel';
+
 // mock
 import account from '../../_mock/account';
+
 // hooks
 import useResponsive from '../../hooks/useResponsive';
+
 // components
 import Logo from '../../components/Logo';
 import Scrollbar from '../../components/Scrollbar';
 import NavSection from '../../components/NavSection';
+
 //
-import navConfig from './NavConfig';
+import {admin, evaluator,student} from './NavConfig';
+
 
 // ----------------------------------------------------------------------
 
@@ -64,23 +72,74 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
         <Logo />
       </Box>
 
+      {getUserType() === 'Admin' ?
+      <>
       <Box sx={{ mb: 5, mx: 2.5 }}>
         <Link underline="none" component={RouterLink} to="#">
           <AccountStyle>
             <Avatar src={account.photoURL} alt="photoURL" />
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {account.displayName}
+                {getFirstName()} {getMiddleName()} {getLastName()}
               </Typography>
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {account.role}
+                {'Admin'}
               </Typography>
             </Box>
           </AccountStyle>
         </Link>
       </Box>
+      <NavSection navConfig={admin} />
+      </>
+      :
+      <></>
+      }
 
-      <NavSection navConfig={navConfig} />
+      {getUserType() === 'Student' ?
+      <>
+      <Box sx={{ mb: 5, mx: 2.5 }}>
+        <Link underline="none" component={RouterLink} to="#">
+          <AccountStyle>
+            <Avatar src={account.photoURL} alt="photoURL" />
+            <Box sx={{ ml: 2 }}>
+              <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
+                {getFirstName()} {getMiddleName()} {getLastName()}
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                {getEmail()}
+              </Typography>
+            </Box>
+          </AccountStyle>
+        </Link>
+      </Box>
+      <NavSection navConfig={student} />
+      </>
+      :
+      <></>
+      }
+
+      {getUserType() === 'Evaluator' ?
+      <>
+      <Box sx={{ mb: 5, mx: 2.5 }}>
+        <Link underline="none" component={RouterLink} to="#">
+          <AccountStyle>
+            <Avatar src={account.photoURL} alt="photoURL" />
+            <Box sx={{ ml: 2 }}>
+              <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
+                {getFirstName()} {getMiddleName()} {getLastName()}
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                {getEmail()}
+              </Typography>
+            </Box>
+          </AccountStyle>
+        </Link>
+      </Box>
+      <NavSection navConfig={evaluator} />
+      </>
+      :
+      <></>
+      }
 
       <Box sx={{ flexGrow: 1 }} />
 

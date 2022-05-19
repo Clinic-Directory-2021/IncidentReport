@@ -24,12 +24,18 @@ import {
   Container,
   Typography,
   TableContainer,
-  TablePagination
+  TablePagination,
+  Snackbar
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 
 // material
+
+// firebase
+import { auth, firestore } from 'src/firebase/firebase-config';
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc, collection, query, where, onSnapshot } from "firebase/firestore"; 
 
 // components
 import Page from '../components/Page';
@@ -37,18 +43,36 @@ import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
-import { UserListHead, UserListToolbar, UserListToolbarEva, UserMoreMenu } from '../sections/@dashboard/dashboardIncident';
+import { UserListHead, UserListToolbar, UserListToolbarEva, UserMoreMenu, UserMoreMenu2 } from '../sections/@dashboard/dashboardIncident';
+
 // mock
 import USERLIST from '../_mock/user';
+
+
+
+const base64 = require('base-64');
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'First Name', alignRight: false },
-  { id: 'role', label: 'Last Name', alignRight: false },
-  { id: 'role', label: 'Email', alignRight: false },
-  { id: '' },
+  {id: 'image', label: 'Image', alignRight: false },
+  { id: 'firstname', label: 'First name', alignRight: false },
+  { id: 'lastname', label: 'Last name', alignRight: false },
+  { id: 'email', label: 'Email', alignRight: false },
 ];
+
+const DATA = [
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth1", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth2", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth3", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth4", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth5", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth6", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth7", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth8", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth9", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+  {image:'https://picsum.photos/200/300',firstname:"Kenneth10", lastname:"Galvez", email:"kenneth.p.galvez@gmail.com"},
+]
 
 
 // MODAL ----------------------------------------------------------------------
@@ -84,6 +108,7 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
+
 function applySortFilter(array, comparator, query) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -109,6 +134,24 @@ export default function User() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [evaluatorData, setEvaluatorData] = useState([])
+
+  const getAllDocuments = (db,collectionName) =>{
+    const collectionList = query(collection(db, collectionName), where('userType' ,'==' , 'Evaluator'));
+    const unsubscribe = onSnapshot(collectionList, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+          temp.push(doc.data());
+      });
+      setEvaluatorData(temp)
+    });
+  }
+
+  React.useEffect(() => {
+    getAllDocuments(firestore,"users")
+  }, [])
+
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -172,35 +215,67 @@ export default function User() {
     const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [snackOpen, setSnackOpen] = React.useState(false);
+  const [loading, setLoading] = useState(false)
+  const [message,setMessage] = useState('')
 
-  const RegisterSchema = Yup.object().shape({
+  const EvaluatorAuth = (data) =>{
+    setSnackOpen(true);
+    if(data.password === data.confirmpassword){
+      createUserWithEmailAndPassword(auth, data.email, '12345678')
+      .then(async(userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+          await setDoc(doc(firestore, "users", user.uid),{
+            uid:user.uid,
+            firstName:data.firstName,
+            lastName:data.lastName,
+            email:data.email,
+            password:base64.encode('12345678'),
+            userType:'Evaluator'
+          }).then(()=>{
+          setSnackOpen(true);
+          setMessage('Successfully Added Evaluator')
+          setLoading(false)
+          setOpen(false);
+        });
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        setSnackOpen(true);
+        setMessage(errorMessage)
+        setLoading(false)
+        // ..
+      });
+    }
+    else{
+      setSnackOpen(true);
+      setMessage("Password and Confirm password does not matched.")
+      setLoading(false)
+    }
+    
+  }
+
+  const EvaluatorsSchema = Yup.object().shape({
     firstName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('First name required'),
     lastName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Last name required'),
     email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-    password: Yup.string().required('Password is required'),
-    confirmpassword: Yup.string().required('Confirm Password is required'),
-    studentNumber: Yup.string().required('Student number is required'),
-    yearLevel: Yup.string().required('Year level is required'),
-    section: Yup.string().required('Section is required'),
 
   });
 const formik = useFormik({
   initialValues: {
     firstName: '',
-    middleName:'',
     lastName: '',
-    studentNumber: '',
-    email: '',
-    confirmpassword: '',
-    password: '',
-    yearLevel: '',
-    section: '',
+    email:'',
   },
-  validationSchema: RegisterSchema,
+  validationSchema: EvaluatorsSchema,
   onSubmit: () => {
-    navigate('/dashboard', { replace: true });
+    EvaluatorAuth(formik.values) 
   },
 });
+
+
 
 const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
 
@@ -253,16 +328,15 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
           </Stack>
           <TextField
             fullWidth
-            type="number"
             label="Last Name"
-            {...getFieldProps('studentNumber')}
-            error={Boolean(touched.studentNumber && errors.studentNumber)}
-            helperText={touched.studentNumber && errors.studentNumber}
+            {...getFieldProps('lastName')}
+            error={Boolean(touched.lastName && errors.lastName)}
+            helperText={touched.lastName && errors.lastName}
           />
 
           <TextField
             fullWidth
-            autoComplete="username"
+            autoComplete="email"
             type="email"
             label="Email address"
             {...getFieldProps('email')}
@@ -270,15 +344,7 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
             helperText={touched.email && errors.email}
           />
 
-          <TextField
-            fullWidth
-            label="Section"
-            {...getFieldProps('section')}
-            error={Boolean(touched.section && errors.section)}
-            helperText={touched.section && errors.section}
-          />
-
-          <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
+          <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={loading}>
             Add
           </LoadingButton>
         </Stack>
@@ -308,23 +374,30 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, 
-                            name, 
-                            role, 
-                            status, 
-                            company, 
-                            avatarUrl, 
-                            isVerified
+                  {evaluatorData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                    // const { id, 
+                    //         name, 
+                    //         role, 
+                    //         status, 
+                    //         company, 
+                    //         avatarUrl, 
+                    //         isVerified
                             
                             
-                            } = row;
-                    const isItemSelected = selected.indexOf(name) !== -1;
+                    //         } = row;
+                    const {
+                      uid,
+                      image,
+                      firstName,
+                      lastName,
+                      email,
+                    } = row
+                    const isItemSelected = selected.indexOf(firstName) !== -1;
 
                     return (
                       <TableRow
                         hover
-                        key={id}
+                        key={uid}
                         tabIndex={-1}
                         // role="checkbox"
                         selected={isItemSelected}
@@ -333,16 +406,16 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
                         
                         <TableCell style={{padding:'15px'}} component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={avatarUrl} />
-                            <Typography variant="subtitle2" noWrap>
-                              {name}
-                            </Typography>
+                            <Avatar alt={'profle_picture'} src={image} />
                           </Stack>
                         </TableCell>
-                        <TableCell align="left">{company}</TableCell>
-                        <TableCell align="left">{role}</TableCell>
+                        <TableCell style={{padding:'15px'}} component="th" scope="row" padding="none">
+                              {firstName}
+                        </TableCell>
+                        <TableCell align="left">{lastName}</TableCell>
+                        <TableCell align="left">{email}</TableCell>
                         <TableCell align="right">
-                          <UserMoreMenu />
+                          <UserMoreMenu2 id={uid} collection="evaluators"/>
                         </TableCell>
                       </TableRow>
                     );
@@ -369,7 +442,7 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={evaluatorData.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -378,7 +451,7 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
         </Card>
         
       </Container>
-      
+      <Snackbar open={snackOpen} autoHideDuration={6000} message={message} />
     </Page>
     
   );

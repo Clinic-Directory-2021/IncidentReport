@@ -3,19 +3,17 @@ import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { alpha } from '@mui/material/styles';
 import {Link, Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton } from '@mui/material';
+// Login Model
+import { getEmail, getFirstName, getLastName, getMiddleName, getUserType } from 'src/sections/auth/login/LoginModel';
 // components
 import MenuPopover from '../../components/MenuPopover';
 // mocks_
 import account from '../../_mock/account';
 
+
 // ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
-  {
-    label: 'Home',
-    icon: 'eva:home-fill',
-    linkTo: '#',
-  },
   {
     label: 'Profile',
     icon: 'eva:person-fill',
@@ -87,10 +85,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+          {getFirstName()} {getMiddleName()} {getLastName()}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {getEmail()}
           </Typography>
         </Box>
 
