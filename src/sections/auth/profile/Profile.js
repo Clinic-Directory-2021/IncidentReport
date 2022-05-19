@@ -10,9 +10,13 @@ import Snackbar from '@mui/material/Snackbar';
 
 // component
 import { auth,firestore } from 'src/firebase/firebase-config';
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore"; 
+import { createUserWithEmailAndPassword,updateProfile } from "firebase/auth";
+import { doc, setDoc, updateDoc } from "firebase/firestore"; 
+
+import { getEmail, getFirstName, getLastName, getMiddleName, getSection, getStudentNumber, getYear, setEmail, setFirstName, setLastName, setMiddleName, setSection, setStudentNumber, setYear, } from '../login/LoginModel';
+
 import Iconify from '../../../components/Iconify';
+
 
 const base64 = require('base-64');
 
@@ -23,53 +27,37 @@ export default function Profile() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false)
   const [message,setMessage] = useState('')
+  const disableVar = true
 
-  const RegisterAuth = (data) =>{
+  const UpdateAuth = (data) =>{
     setLoading(true)
-    if(data.password === data.confirmpassword){
-      createUserWithEmailAndPassword(auth, data.email, data.password)
-      .then(async(userCredential) => {
-        // Signed in 
-        const user = userCredential.user;
-          await setDoc(doc(firestore, "users", user.uid),{
-            uid:user.uid,
-            firstName:data.firstName,
-            middleName:data.middleName,
-            lastName:data.lastName,
-            email:data.email,
-            yearLevel:data.yearLevel,
-            section:data.section,
-            password:base64.encode(data.password),
-            userType:'Student',
-            studentNumber: data.studentNumber
-          }).then(()=>{
-          setOpen(true);
-          setMessage('Successfully Addeded Evaluator')
-          setLoading(false)
-          navigate('/login', { replace: true });
-        });
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        setOpen(true);
-        setMessage(errorMessage)
-        setLoading(false)
-        // ..
-      });
-    }
-    else{
-      setOpen(true);
-      setMessage("Password and Confirm password does not matched.")
+    updateProfile(auth.currentUser, {
+      email: data.email,
+    }).then(async() => {
+      const washingtonRef = doc(firestore, "users", auth.currentUser.uid);
+      // Set the "capital" field of the city 'DC'
+      await updateDoc(washingtonRef, data);
+      setOpen(true)
+      setMessage('Profile Modified')
       setLoading(false)
-    } 
+      setFirstName(data.firstName)
+      setMiddleName(data.middleName)
+      setLastName(data.lastName)
+      setEmail(data.email)
+      setStudentNumber(data.studentNumber)
+      setYear(data.yearLevel)
+      setSection(data.section)
+    }).catch((error) => {
+      console.log(error)
+    });
+    
   }
   const [showPassword, setShowPassword] = useState(false);
 
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('First name required'),
     lastName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Last name required'),
-    email: Yup.string().email('Email must be a valid email address').required('Email is required'),
+    email: Yup.string(),
     studentNumber: Yup.string().required('Student number is required'),
     yearLevel: Yup.string().required('Year level is required'),
     section: Yup.string().required('Section is required'),
@@ -77,17 +65,17 @@ export default function Profile() {
 
   const formik = useFormik({
     initialValues: {
-      firstName: '',
-      middleName:'',
-      lastName: '',
-      studentNumber: '',
-      email: '',
-      yearLevel: '',
-      section: '',
+      firstName: getFirstName(),
+      middleName:getMiddleName(),
+      lastName: getLastName(),
+      studentNumber: getStudentNumber(),
+      email: getEmail(),
+      yearLevel: getYear(),
+      section: getSection(),
     },
     validationSchema: RegisterSchema,
     onSubmit: () => {
-    RegisterAuth(formik.values)
+    UpdateAuth(formik.values)
     },
   });
 
@@ -152,7 +140,8 @@ export default function Profile() {
             fullWidth
             disablePortal
             id="combo-box-demo"
-            options={YEARLEVEL}         
+            options={YEARLEVEL}
+            defaultValue={formik.values.yearLevel}         
             renderInput={(params) => <TextField {...params} label="Year Level" 
             {...getFieldProps('yearLevel')}
             error={Boolean(touched.yearLevel && errors.yearLevel)}

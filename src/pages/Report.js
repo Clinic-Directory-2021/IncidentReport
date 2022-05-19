@@ -10,7 +10,9 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import "./App.css"
 
-
+import { auth, firestore } from 'src/firebase/firebase-config';
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc, collection, query, where, onSnapshot } from "firebase/firestore";
 
 
 
@@ -31,6 +33,8 @@ import {
   TableContainer,
   TablePagination,
 } from '@mui/material';
+
+import { getEmail, getFirstName, getLastName, getMiddleName, getSection, getStudentNumber, getUid, getUserType, getYear } from 'src/sections/auth/login/LoginModel';
 // components
 import Page from '../components/Page';
 import Label from '../components/Label';
@@ -104,6 +108,7 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function User() {
+
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -169,13 +174,44 @@ export default function User() {
 // MODAL CONST----------------------------------------------------------------------
 
   const [open, setOpen] = React.useState(false);
+  const [incidentData, setIncidentData] = useState([])
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
 // PRINT BUTTON----------------------------------------------------------------------
+const getAllDocuments = (db,collectionName) =>{
+  if(getUserType() === 'Student'){
+  const collectionList = query(collection(db, collectionName), where('uid', '==', getUid()));
+  const unsubscribe = onSnapshot(collectionList, (querySnapshot) => {
+    const temp = [];
+    querySnapshot.forEach((doc) => {
+      if(doc.data().status === 'close')
+      {
+        temp.push(doc.data());
+      }
+    });
+    setIncidentData(temp)
+  });
+}
+else{
+  const collectionList = query(collection(db, collectionName));
+  const unsubscribe = onSnapshot(collectionList, (querySnapshot) => {
+    const temp = [];
+    querySnapshot.forEach((doc) => {
+      if(doc.data().status === 'close')
+      {
+        temp.push(doc.data());
+      }
+    });
+    setIncidentData(temp)
+  });
+}
+}
 
-
+React.useEffect(() => {
+  getAllDocuments(firestore,"incidents")
+}, [])
                                                          
   return (
     <Page title="Incidents Reports">
@@ -230,40 +266,41 @@ export default function User() {
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, 
-                            name, 
-                            role, 
-                            status, 
-                            company, 
-                            avatarUrl, 
-                            isVerified
-                                                        
+                  {incidentData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                    const { studentNumber, 
+                            studentName, 
+                            date, 
+                            incidentId, 
+                            incidentType, 
+                            year,
+                            section,
+                            specificDetail,
+                            status,              
                             } = row;
-                    const isItemSelected = selected.indexOf(name) !== -1;
+                    const isItemSelected = selected.indexOf(studentName) !== -1;
 
                     return (
                       <TableRow
                         hover
-                        key={id}
+                        key={incidentId}
                         tabIndex={-1}
                         // role="checkbox"
                         selected={isItemSelected}
                         aria-checked={isItemSelected}
                       >
                       
+                        <TableCell align="left">{studentNumber}</TableCell>
                         <TableCell style={{padding:'15px'}} component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={avatarUrl} />
+                            {/* <Avatar alt={studentName} src={avatarUrl} /> */}
                             <Typography variant="subtitle2" noWrap>
-                              {name}
+                              {studentName}
                             </Typography>
                           </Stack>
                         </TableCell>
-                        <TableCell align="left">{company}</TableCell>
-                        <TableCell align="left">{company}</TableCell>
-                        <TableCell align="left">{role}</TableCell>
-                        <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
+                        <TableCell align="left">{incidentType}</TableCell>
+                        <TableCell align="left">{section}</TableCell>
+                        <TableCell align="left">{year}</TableCell>
                         <TableCell align="left">
                           <Label variant="ghost" color={(status === 'close' && 'error') || 'success'}>
                             {sentenceCase(status)}
@@ -271,7 +308,7 @@ export default function User() {
                         </TableCell>
 
                         <TableCell align="right">
-                          <UserMoreMenuReport />
+                          <UserMoreMenuReport data={row}/>
                         </TableCell>
                       </TableRow>
                     );

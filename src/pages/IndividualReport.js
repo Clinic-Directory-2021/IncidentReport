@@ -10,7 +10,7 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Avatar from '@mui/material/Avatar';
-
+import { useNavigate } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
@@ -36,8 +36,9 @@ import {
 
 } from '@mui/material';
 import { getIndividualData } from 'src/sections/@dashboard/dashboardIncident/individualModel';
-import { firestore } from 'src/firebase/firebase-config';
-import { collection, query, where, onSnapshot, doc, setDoc } from "firebase/firestore";
+import { firestore, storage } from 'src/firebase/firebase-config';
+import { collection, query, where, onSnapshot, doc, setDoc, updateDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { getFirstName, getLastName, getUserType } from 'src/sections/auth/login/LoginModel';
 // components
 import Page from '../components/Page';
@@ -163,7 +164,7 @@ export default function User() {
   const handleClose = () => setOpen(false);
   const commentBox = useRef(null)
   const [disable, setDisable] = React.useState(false)
-
+  const navigate = useNavigate()
   const [value, setValue] = React.useState('Controlled');
   
   const specificDetail = getIndividualData().specificDetail.replace(/[<p></p>]/g,"")
@@ -181,6 +182,20 @@ export default function User() {
   );
   const [comment, setComment] = React.useState([])
   const [reply, setReply] = React.useState('')
+
+  const CloseIncident = async(incidentId,userId) =>{
+    const washingtonRef = doc(firestore, "incidents", incidentId.toString());
+    const userRef = doc(firestore, "users", userId);
+
+    // Set the "capital" field of the city 'DC'
+    await updateDoc(washingtonRef, {
+      status: 'close'
+    });
+    await updateDoc(userRef, {
+      onIncident: false,
+    });
+    navigate('/evaluator/report',{replace:true})
+  }
 
   const handleType = (event) =>{
     setReply(event.target.value)
@@ -227,9 +242,16 @@ export default function User() {
           Individual Report
           </Typography>
          <Box style={{marginRight:'115px'}}>
-          <Button variant="contained" startIcon={<Iconify icon="eva:checkmark-circle-2-outline" />}>
+         {getIndividualData().status !== 'close' && getUserType() !== 'Student' && getIndividualData().processBy === `${getFirstName()} ${getLastName()}`?
+          <Button variant="contained" 
+           startIcon={<Iconify icon="eva:checkmark-circle-2-outline" />}
+           onClick={()=>{CloseIncident(getIndividualData().incidentId.toString(), getIndividualData().uid)}}>
             Mark as resolved
           </Button>
+          :
+          <>
+          </>
+          }
 
           &nbsp;
           &nbsp;
@@ -256,7 +278,6 @@ export default function User() {
         marginBottom:'40px',
         borderRadius:'15px',
         width: '90%',
-        height: 400,
         backgroundColor:'#f7f7f7',
         boxShadow:"0 14px 28px rgba(0,0,0,0.25), \n\t\t\t0 10px 10px rgba(0,0,0,0.22)"
       }}
@@ -272,9 +293,6 @@ export default function User() {
       <text>Section: {getIndividualData().section}</text>
       <text>Incident Type: {getIndividualData().incidentType}</text>
       </Box>
-      {/* <div>
-        
-      </div> */}
       <TextField 
       placeholder='Possible Reason...'
       value={specificDetail}
@@ -288,10 +306,23 @@ export default function User() {
       multiline 
       rows={5} />
 
-      <Button
+      {/* <Button
       style={{top:-20,left:'20px'}} 
       variant="contained" startIcon={<Iconify icon="eva:download-outline" />}>
-      Download Attached File</Button>
+      Download Attached File</Button> */}
+      </Box>
+
+      <Box style={{
+        marginBottom:'40px',
+        borderRadius:'15px',
+        width: '90%',
+        padding:10,
+        backgroundColor:'#f7f7f7',
+        boxShadow:"0 14px 28px rgba(0,0,0,0.25), \n\t\t\t0 10px 10px rgba(0,0,0,0.22)"
+      }}
+      >
+      <text style={{marginRight:'auto', marginLeft:'auto'}}>Image Uploaded</text>
+      <img src={getIndividualData().imageUri} style={{width:'100%'}} alt='proof'/>
       </Box>
       
 
@@ -389,6 +420,7 @@ export default function User() {
       
       {/* Add comment and Post Button */}
       &nbsp;&nbsp;&nbsp;
+      {getIndividualData().status !== 'close' &&  getIndividualData().processBy === `${getFirstName()} ${getLastName()}` ?
       <Box
       style={{
         borderRadius:'15px',
@@ -420,6 +452,9 @@ export default function User() {
       Send Response</Button>
       </Box>
       </Box>
+      :
+      <></>
+      }
 
 
       </Container>

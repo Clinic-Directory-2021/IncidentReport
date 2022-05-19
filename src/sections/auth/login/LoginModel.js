@@ -6,6 +6,9 @@ let _studentNumber;
 let _year;
 let _section;
 let _usertype;
+let _password;
+let _uid;
+let _onIncident;
 
 export const setFirstName = (firstname) =>{
     _firstname = firstname
@@ -61,4 +64,25 @@ export const setUserType = (usertype) =>{
 }
 export const getUserType = () =>{
     return _usertype
+}
+
+export const setPassword = (password) =>{
+    _password = password
+}
+export const getPassword = () =>{
+    return _password
+}
+
+export const setUid = (uid) =>{
+    _uid = uid
+}
+export const getUid = () =>{
+    return _uid
+}
+
+export const setOnIncident = (onIncident) =>{
+    _onIncident = onIncident
+}
+export const getOnIncident = () =>{
+    return _onIncident
 }

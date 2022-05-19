@@ -21,7 +21,7 @@ const MENU_OPTIONS = [
     linkTo: '/student/profile',
   },
   {
-    label: 'Settings',
+    label: 'Change Password',
     icon: 'eva:settings-2-fill',
     linkTo: '/student/settings',
   },

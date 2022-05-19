@@ -15,10 +15,10 @@ import "./App.css"
 
 
 // firebase
-import { auth, firestore } from 'src/firebase/firebase-config';
+import { auth, firestore, storage } from 'src/firebase/firebase-config';
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc, collection, query, where, onSnapshot } from "firebase/firestore";
-
+import { doc, setDoc, collection, query, where, onSnapshot, updateDoc, deleteDoc  } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 // material
 import {
@@ -39,7 +39,7 @@ import {
   Snackbar
 } from '@mui/material';
 
-import { getEmail, getFirstName, getLastName, getMiddleName, getSection, getStudentNumber, getUserType, getYear } from 'src/sections/auth/login/LoginModel';
+import { getEmail, getFirstName, getLastName, getMiddleName, getSection, getStudentNumber, getUid, getUserType, getYear, getOnIncident, setOnIncident } from 'src/sections/auth/login/LoginModel';
 
 // components
 import Page from '../components/Page';
@@ -138,11 +138,14 @@ export default function User() {
 
   const getAllDocuments = (db,collectionName) =>{
     if(getUserType() === 'Student'){
-    const collectionList = query(collection(db, collectionName), where('studentNumber', '==', getStudentNumber()));
+    const collectionList = query(collection(db, collectionName), where('uid', '==', getUid()));
     const unsubscribe = onSnapshot(collectionList, (querySnapshot) => {
       const temp = [];
       querySnapshot.forEach((doc) => {
+        if(doc.data().status !== 'close')
+        {
           temp.push(doc.data());
+        }
       });
       setIncidentData(temp)
     });
@@ -265,12 +268,22 @@ export default function User() {
 
   const [open, setOpen] = React.useState(false);
   const [snackOpen, setSnackOpen] = React.useState(false);
-
+  const [buttonDisable, setButtonDisable] = React.useState(getOnIncident())
+  const [image, setImage] = React.useState(null)
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const IncidentAuth = async(data) =>{
       const incidentId =  Date.parse(new Date())
+      const updateUser = doc(firestore, "users", getUid())
+      const imageRef = ref(storage, `incident/  ${incidentId}/`)
+      // const img = await fetch(image)
+      // const bytes = await img.blob()
+      let tempImg = ''
+      uploadBytes(imageRef, image).then((snapshot) => {
+        console.log(`Uploaded a blob or file! ${snapshot.ref}`);
+        getDownloadURL(snapshot.ref).then(url => {tempImg = url})
+      });
       await setDoc(doc(firestore, "incidents", incidentId.toString()),{
         studentNumber: data.studentNumber,
         studentName: data.studentName,
@@ -283,9 +296,17 @@ export default function User() {
         incidentId:incidentId,
         specificDetail:data.specificDetail,
         status:'open',
-        email:data.email
+        email:data.email,
+        uid:data.uid,
+        imageUri:image,
       }).then(()=>{
+        
     });
+    await updateDoc(updateUser, {
+      onIncident: true
+    });
+    setOnIncident(true)
+    setButtonDisable(true)
   }
 
   const IncidentSchema = Yup.object().shape({
@@ -298,7 +319,8 @@ export default function User() {
     resolution: Yup.string(),
     processBy: Yup.string(),
     date: Yup.string(),
-    email: Yup.string()
+    email: Yup.string(),
+    uid: Yup.string()
   });
 
   const currentDate = () =>{
@@ -317,7 +339,8 @@ export default function User() {
       processBy:'',
       date:currentDate(),
       specificDetail:'',
-      email:getEmail()
+      email:getEmail(),
+      uid:getUid(),
     },
     validationSchema: IncidentSchema,
     onSubmit: () => {
@@ -334,7 +357,10 @@ export default function User() {
   });
 
   const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
-                                                           
+  const inputChange = (event, currentValue) =>{
+    const image = URL.createObjectURL(event.target.files[0])
+    setImage(image)
+  }
   return (
     <Page title="Incidents Reports">
       <Container>
@@ -346,8 +372,8 @@ export default function User() {
 
           
 
-          {getUserType() === 'Student' ?
-          <Button onClick={handleOpen} variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
+          {getUserType() === 'Student'?
+          <Button onClick={handleOpen} disabled={buttonDisable} variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
             File Report
           </Button>
           :
@@ -389,6 +415,7 @@ export default function User() {
                 } }
                 />
               </div>
+              <input type="file" onChange={inputChange}/>
               <Box style={{marginTop:'20px', marginBottom:'20px'}}>
               <Button variant="contained"  type="submit">Submit</Button>
             </Box>

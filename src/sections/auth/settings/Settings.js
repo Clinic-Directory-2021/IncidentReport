@@ -10,9 +10,11 @@ import Snackbar from '@mui/material/Snackbar';
 
 // component
 import { auth,firestore } from 'src/firebase/firebase-config';
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore"; 
+import { createUserWithEmailAndPassword, updatePassword } from "firebase/auth";
+import { doc, setDoc, updateDoc } from "firebase/firestore"; 
+import { getPassword, setPassword } from '../login/LoginModel';
 import Iconify from '../../../components/Iconify';
+
 
 const base64 = require('base-64');
 
@@ -24,44 +26,49 @@ export default function Settings() {
   const [loading, setLoading] = useState(false)
   const [message,setMessage] = useState('')
 
-  const RegisterAuth = (data) =>{
+  const SettingsAuth = async(data) =>{
     setLoading(true)
-    if(data.password === data.confirmpassword){
-      createUserWithEmailAndPassword(auth, data.email, data.password)
-      .then(async(userCredential) => {
-        // Signed in 
-        const user = userCredential.user;
-          await setDoc(doc(firestore, "users", user.uid),{
-            uid:user.uid,
-            firstName:data.firstName,
-            middleName:data.middleName,
-            lastName:data.lastName,
-            email:data.email,
-            yearLevel:data.yearLevel,
-            section:data.section,
-            password:base64.encode(data.password),
-            userType:'Student',
-            studentNumber: data.studentNumber
-          }).then(()=>{
-          setOpen(true);
-          setMessage('Successfully Addeded Evaluator')
+    console.log('hello')
+    if(data.newPassword === data.confirmPassword){
+      const user = auth.currentUser;
+      if(data.oldPassword === base64.decode(getPassword()))
+      {
+        if(data.oldPassword !== data.newPassword){
+          const newPassword = data.newPassword;
+          const encodedPassword = base64.encode(data.newPassword)
+          updatePassword(user, newPassword).then(async() => {
+            const washingtonRef = doc(firestore, "users", auth.currentUser.uid);
+
+          // Set the "capital" field of the city 'DC'
+          await updateDoc(washingtonRef, {
+            password: encodedPassword
+          });
+            setPassword(encodedPassword )
+            setLoading(false)
+            setOpen(true)
+            setMessage('Successfully changed password')
+          }).catch((error) => {
+            setLoading(false)
+            setOpen(true)
+            setMessage(error)
+          });
+        }
+        else{
           setLoading(false)
-          navigate('/login', { replace: true });
-        });
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        setOpen(true);
-        setMessage(errorMessage)
+          setOpen(true)
+          setMessage('New password should be differ to you old password.')
+        }
+      }
+      else{
         setLoading(false)
-        // ..
-      });
+        setOpen(true)
+        setMessage('Wrong old password.')
+      }
     }
     else{
-      setOpen(true);
-      setMessage("Password and Confirm password does not matched.")
       setLoading(false)
+      setOpen(true)
+      setMessage('Password and Confirm password does not matched')
     }
     
   }
@@ -69,42 +76,27 @@ export default function Settings() {
   const [showPassword, setShowPassword] = useState(false);
 
   const RegisterSchema = Yup.object().shape({
-    firstName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('First name required'),
-    lastName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Last name required'),
-    email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-    password: Yup.string().required('Password is required'),
-    confirmpassword: Yup.string().required('Confirm Password is required'),
-    studentNumber: Yup.string().required('Student number is required'),
-    yearLevel: Yup.string().required('Year level is required'),
-    section: Yup.string().required('Section is required'),
-  });
+    oldPassword:Yup.string().min(8,'Password atleast 8 characters').max(12,'Password max 12 characters').required('Old Password is required'),
+    newPassword: Yup.string().min(8,'Password atleast 8 characters').max(12,'Password max 12 characters').required('Password is required'),
+    confirmPassword: Yup.string().required('Confirm Password is required'),
+  })
 
   const formik = useFormik({
     initialValues: {
-      firstName: '',
-      middleName:'',
-      lastName: '',
-      studentNumber: '',
-      email: '',
-      confirmpassword: '',
-      password: '',
-      yearLevel: '',
-      section: '',
+      oldPassword:'',
+      newPassword:'',
+      confirmPassword:'',
     },
     validationSchema: RegisterSchema,
     onSubmit: () => {
-    RegisterAuth(formik.values)
+    SettingsAuth(formik.values)
+    formik.values.oldPassword = ''
+    formik.values.newPassword = ''
+    formik.values.confirmPassword = ''
     },
   });
 
   const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
-
-  const YEARLEVEL = [
-    { label: '1'},
-    { label: '2'},
-    { label: '3'},
-    { label: '4'},
-    ];
 
   return (
     <FormikProvider value={formik}>
@@ -116,7 +108,7 @@ export default function Settings() {
             autoComplete="current-password"
             type={showPassword ? 'text' : 'password'}
             label="Old Password"
-            {...getFieldProps('password')}
+            {...getFieldProps('oldPassword')}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -126,15 +118,15 @@ export default function Settings() {
                 </InputAdornment>
               ),
             }}
-            error={Boolean(touched.password && errors.password)}
-            helperText={touched.password && errors.password}
+            error={Boolean(touched.oldPassword && errors.oldPassword)}
+            helperText={touched.oldPassword && errors.oldPassword}
           />
           <TextField
             fullWidth
             autoComplete="current-password"
             type={showPassword ? 'text' : 'password'}
-            label="Password"
-            {...getFieldProps('password')}
+            label="New Password"
+            {...getFieldProps('newPassword')}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -144,8 +136,8 @@ export default function Settings() {
                 </InputAdornment>
               ),
             }}
-            error={Boolean(touched.password && errors.password)}
-            helperText={touched.password && errors.password}
+            error={Boolean(touched.newPassword && errors.newPassword)}
+            helperText={touched.newPassword && errors.newPassword}
           />
 
             <TextField
@@ -153,7 +145,7 @@ export default function Settings() {
             autoComplete="current-password"
             type={showPassword ? 'text' : 'password'}
             label="Confirm Password"
-            {...getFieldProps('confirmpassword')}
+            {...getFieldProps('confirmPassword')}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -163,15 +155,15 @@ export default function Settings() {
                 </InputAdornment>
               ),
             }}
-            error={Boolean(touched.confirmpassword && errors.confirmpassword)}
-            helperText={touched.confirmpassword && errors.confirmpassword}
+            error={Boolean(touched.confirmPassword && errors.confirmPassword)}
+            helperText={touched.confirmPassword && errors.confirmPassword}
             
           />
 
           </Stack>
 
           <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={loading}>
-            Register
+            Change Password
           </LoadingButton>
           <Snackbar open={open} autoHideDuration={6000} message={message} />
         </Stack>

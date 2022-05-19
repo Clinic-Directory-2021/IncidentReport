@@ -16,7 +16,7 @@ import { auth, firestore } from "src/firebase/firebase-config";
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { doc, getDoc } from "firebase/firestore";
 import Iconify from '../../../components/Iconify';
-import { getUserType, setEmail, setFirstName, setLastName, setMiddleName, setSection, setStudentNumber, setUserType, setYear } from './LoginModel';
+import { getUserType, setEmail, setFirstName, setLastName, setMiddleName, setPassword, setSection, setStudentNumber, setUserType, setYear, setUid, setOnIncident } from './LoginModel';
 
 
 // ----------------------------------------------------------------------
@@ -60,6 +60,9 @@ export default function LoginForm() {
             setFirstName(userSnap.data().firstName)
             setLastName(userSnap.data().lastName)
             setEmail(email)
+            setPassword(userSnap.data().password)
+            setUid(userSnap.id)
+            setOnIncident(userSnap.data().onIncident)
           }
           else{
             setUserType(userSnap.data().userType)
@@ -67,6 +70,8 @@ export default function LoginForm() {
             setMiddleName('')
             setLastName(userSnap.data().lastName)
             setEmail(email)
+            setPassword(userSnap.data().password)
+            setUid(userSnap.id)
           }
           
         }else{

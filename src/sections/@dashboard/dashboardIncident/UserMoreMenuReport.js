@@ -7,11 +7,38 @@ import { Box, Menu, MenuItem, IconButton, ListItemIcon, ListItemText, TextField 
 // component
 import Iconify from '../../../components/Iconify';
 
-
-
-
-
+// const getAllComments = (reportId) =>{
+//   const collectionList = query(collection(db, collectionName, reportId, "comments"));
+//   const unsubscribe = onSnapshot(collectionList, (querySnapshot) => {
+//     const temp = [];
+//     querySnapshot.forEach((doc) => {
+//       if(doc.data().status === 'close')
+//       {
+//         temp.push(doc.data());
+//       }
+//     });
+//     setIncidentData(temp)
+//   });
+// }
 class ComponentToPrint extends React.PureComponent {
+
+  
+
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      studentName: props.data.studentName,
+      email:props.data.email,
+      studentNumber:props.data.studentNumber,
+      section:props.data.section,
+      year:props.data.year,
+      incidentType:props.data.incidentType,
+      processBy:props.data.processBy,
+      specificDetail:props.data.specificDetail,
+      imageUri:props.data.imageUri
+    }
+  }
 
   render() {
     return (
@@ -57,10 +84,10 @@ class ComponentToPrint extends React.PureComponent {
         display:'flex', 
         flexDirection:'column'}}>
         <div style={{flexDirection:'row'}}>
-        <text>Name</text>
+        <text>Student Name</text>
         <TextField
           style={{marginTop:'-10px',left:120,width:'70%'}}
-        
+          value={this.state.studentName}
           id="standard-error-helper-text"
           variant="standard"
         />
@@ -72,6 +99,7 @@ class ComponentToPrint extends React.PureComponent {
         <text>Gmail</text>  
         <TextField
           style={{marginTop:'-10px',left:120,width:'70%'}}
+          value={this.state.email}
           id="standard-error-helper-text"
           variant="standard"
         />
@@ -83,7 +111,7 @@ class ComponentToPrint extends React.PureComponent {
         <text>Student Number</text>
         <TextField
           style={{marginTop:'-10px',left:30, width:'70%'}}
-          
+          value={this.state.studentNumber}
           id="standard-error-helper-text"
           variant="standard"
         />
@@ -103,7 +131,7 @@ class ComponentToPrint extends React.PureComponent {
         <text>Section</text>
         <TextField
           style={{marginTop:'-10px',left:105,width:'70%'}}
-        
+          value={this.state.section}
           id="standard-error-helper-text"
           variant="standard"
         />
@@ -115,7 +143,7 @@ class ComponentToPrint extends React.PureComponent {
         <text>Year Level</text>  
         <TextField
           style={{marginTop:'-10px',left:85,width:'70%'}}
-        
+          value={this.state.year}
           id="standard-error-helper-text"
           variant="standard"
         />
@@ -128,7 +156,7 @@ class ComponentToPrint extends React.PureComponent {
         <text>Incident Type</text>  
         <TextField
           style={{marginTop:'-10px',left:55,width:'70%'}}
-
+          value={this.state.incidentType}
           id="standard-error-helper-text"
           variant="standard"
         />
@@ -141,7 +169,7 @@ class ComponentToPrint extends React.PureComponent {
         <text>Processed By</text>  
         <TextField
           style={{marginTop:'-10px',left:55,width:'70%'}}
-
+          value={this.state.processBy}
           id="standard-error-helper-text"
           variant="standard"
         />
@@ -152,13 +180,26 @@ class ComponentToPrint extends React.PureComponent {
         <text>Possible Reason</text> 
         <TextField
           style={{backgroundColor:'#e8eff5', marginTop:'10px',width:'93%',}}
-          InputProps={{ style: { fontSize: 150 } }}
           InputLabelProps={{ style: { fontSize: 150 } }}
           id="standard-error-helper-text"
+          value={this.state.specificDetail}
         />
         </div>
         &nbsp;&nbsp;&nbsp;
-        <div style={{ marginTop:'140px',flexDirection:'column'}}>
+
+        <Box style={{
+        marginBottom:'40px',
+        borderRadius:'15px',
+        width:200,
+        padding:10,
+        backgroundColor:'#f7f7f7',
+        boxShadow:"0 14px 28px rgba(0,0,0,0.25), \n\t\t\t0 10px 10px rgba(0,0,0,0.22)"
+      }}
+      >
+      <text style={{marginRight:'auto', marginLeft:'auto'}}>Image Uploaded</text>
+      <img src={this.state.imageUri} style={{width:'100%'}} alt='proof'/>
+      </Box>
+        {/* <div style={{ marginTop:'140px',flexDirection:'column'}}>
         <text>Comments</text> 
         <TextField
           style={{backgroundColor:'#e8eff5', marginTop:'10px',width:'93%',}}
@@ -166,7 +207,7 @@ class ComponentToPrint extends React.PureComponent {
           InputLabelProps={{ style: { fontSize: 150 } }}
           id="standard-error-helper-text"
         />
-        </div>
+        </div> */}
       </div>
       </div>
     );
@@ -176,7 +217,7 @@ class ComponentToPrint extends React.PureComponent {
 // ----------------------------------------------------------------------
 
 
-export default function UserMoreMenuReport() {
+export default function UserMoreMenuReport(props) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -190,7 +231,7 @@ export default function UserMoreMenuReport() {
     <>
 
           <div style={{display:'none'}}>
-          <ComponentToPrint ref={componentRef}/>
+          <ComponentToPrint ref={componentRef} data={props.data}/>
           </div>
   
 
@@ -208,7 +249,7 @@ export default function UserMoreMenuReport() {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-      <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>
+      <MenuItem component={RouterLink} to="/IR/IndividualReport" sx={{ color: 'text.secondary' }}>
           <ListItemIcon>
             <Iconify icon="eva:eye-outline" width={24} height={24} />
           </ListItemIcon>

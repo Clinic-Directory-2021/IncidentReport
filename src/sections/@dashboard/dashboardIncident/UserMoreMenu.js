@@ -6,9 +6,9 @@ import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText } from '@mui/mat
 // firebase
 import { auth,firestore } from "src/firebase/firebase-config";
 import { signInWithEmailAndPassword, deleteUser } from "firebase/auth"
-import { doc, getDoc, deleteDoc } from "firebase/firestore";
+import { doc, getDoc, deleteDoc, updateDoc, } from "firebase/firestore";
 
-import { getUserType } from 'src/sections/auth/login/LoginModel';
+import { getFirstName, getLastName, getUid, getUserType } from 'src/sections/auth/login/LoginModel';
 import { setIndividualData } from './individualModel';
 
 // component
@@ -57,7 +57,23 @@ export default function UserMoreMenu(props) {
       console.log("No such document!");
     }
   }
+  const ProcessIncident = async(incidentId) =>{
+    const washingtonRef = doc(firestore, "incidents", incidentId.toString());
 
+    // Set the "capital" field of the city 'DC'
+    await updateDoc(washingtonRef, {
+      status: 'on process',
+      processBy: `${getFirstName()} ${getLastName()}`,
+    });
+
+  }
+
+  const DeleteIncident = async(incidentId) =>{
+    await deleteDoc(doc(firestore, "incidents", incidentId.toString()));
+    await updateDoc(doc(firestore, "users", getUid().toString()), {
+      onIncident: false
+    });
+  }
   return (
     <>
       <IconButton ref={ref} onClick={() => setIsOpen(true)}>
@@ -75,7 +91,10 @@ export default function UserMoreMenu(props) {
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         {getUserType() !== 'Student' && props.data.status === 'open' ?
-        <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>
+        <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }} onClick={()=>{
+          ProcessIncident(props.data.incidentId)
+        }}
+          >
           <ListItemIcon>
             <Iconify icon="eva:bookmark-outline" width={24} height={24} />
           </ListItemIcon>
@@ -85,7 +104,7 @@ export default function UserMoreMenu(props) {
         <></>
         }
 
-        {props.data.status === 'on process' ?
+        {props.data.status !== 'open' ?
           <MenuItem component={RouterLink} to="/IR/IndividualReport" sx={{ color: 'text.secondary' }}>
           <ListItemIcon>
             <Iconify icon="eva:eye-outline" width={24} height={24} />
@@ -97,7 +116,7 @@ export default function UserMoreMenu(props) {
         }
 
         {getUserType() === 'Student' ?
-        <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>
+        <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }} onClick={()=>{DeleteIncident(props.data.incidentId)}}>
           <ListItemIcon>
             <Iconify icon="eva:archive-outline" width={24} height={24} />
           </ListItemIcon>
