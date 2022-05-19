@@ -35,7 +35,7 @@ import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
-import { UserListHead, UserListToolbar, UserListToolbarEva, UserMoreMenu } from '../sections/@dashboard/dashboardIncident';
+import { UserListHead, UserListToolbar, UserListToolbarEva, UserMoreMenu2 } from '../sections/@dashboard/dashboardIncident';
 // mock
 import USERLIST from '../_mock/user';
 
@@ -113,7 +113,7 @@ export default function User() {
   const [studentData, setStudentData] = useState([])
 
   const getAllDocuments = (db,collectionName) =>{
-    const collectionList = query(collection(db, collectionName));
+    const collectionList = query(collection(db, collectionName), where('userType', '==', 'Student'));
     const unsubscribe = onSnapshot(collectionList, (querySnapshot) => {
       const temp = [];
       querySnapshot.forEach((doc) => {
@@ -270,11 +270,11 @@ export default function User() {
                           </Stack>
                         </TableCell>
                         <TableCell align="left">{firstName}</TableCell>
-                        <TableCell align="left">{middleName}</TableCell>
+                        <TableCell align="left">{middleName === '' ? '--' : middleName}</TableCell>
                         <TableCell align="left">{lastName}</TableCell>
                         <TableCell align="left">{email}</TableCell>
                         <TableCell align="right">
-                          <UserMoreMenu id={uid} collection="evaluators"/>
+                          <UserMoreMenu2 id={uid} collection="evaluators"/>
                         </TableCell>
                       </TableRow>
                     );

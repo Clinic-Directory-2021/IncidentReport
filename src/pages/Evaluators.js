@@ -43,9 +43,11 @@ import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
-import { UserListHead, UserListToolbar, UserListToolbarEva, UserMoreMenu } from '../sections/@dashboard/dashboardIncident';
+import { UserListHead, UserListToolbar, UserListToolbarEva, UserMoreMenu, UserMoreMenu2 } from '../sections/@dashboard/dashboardIncident';
+
 // mock
 import USERLIST from '../_mock/user';
+
 
 
 const base64 = require('base-64');
@@ -136,7 +138,7 @@ export default function User() {
   const [evaluatorData, setEvaluatorData] = useState([])
 
   const getAllDocuments = (db,collectionName) =>{
-    const collectionList = query(collection(db, collectionName));
+    const collectionList = query(collection(db, collectionName), where('userType' ,'==' , 'Evaluator'));
     const unsubscribe = onSnapshot(collectionList, (querySnapshot) => {
       const temp = [];
       querySnapshot.forEach((doc) => {
@@ -147,7 +149,7 @@ export default function User() {
   }
 
   React.useEffect(() => {
-    getAllDocuments(firestore,"evaluators")
+    getAllDocuments(firestore,"users")
   }, [])
 
 
@@ -224,12 +226,13 @@ export default function User() {
       .then(async(userCredential) => {
         // Signed in 
         const user = userCredential.user;
-          await setDoc(doc(firestore, "evaluators", user.uid),{
+          await setDoc(doc(firestore, "users", user.uid),{
             uid:user.uid,
             firstName:data.firstName,
             lastName:data.lastName,
             email:data.email,
-            password:base64.encode('12345678')
+            password:base64.encode('12345678'),
+            userType:'Evaluator'
           }).then(()=>{
           setSnackOpen(true);
           setMessage('Successfully Added Evaluator')
@@ -412,7 +415,7 @@ const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
                         <TableCell align="left">{lastName}</TableCell>
                         <TableCell align="left">{email}</TableCell>
                         <TableCell align="right">
-                          <UserMoreMenu id={uid} collection="evaluators"/>
+                          <UserMoreMenu2 id={uid} collection="evaluators"/>
                         </TableCell>
                       </TableRow>
                     );

@@ -12,10 +12,11 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
 // component
-import { auth } from "src/firebase/firebase-config";
+import { auth, firestore } from "src/firebase/firebase-config";
 import { signInWithEmailAndPassword } from "firebase/auth"
+import { doc, getDoc } from "firebase/firestore";
 import Iconify from '../../../components/Iconify';
-import { setEmail, setFirstName, setLastName } from './LoginModel';
+import { getUserType, setEmail, setFirstName, setLastName, setMiddleName, setSection, setStudentNumber, setUserType, setYear } from './LoginModel';
 
 
 // ----------------------------------------------------------------------
@@ -33,17 +34,55 @@ export default function LoginForm() {
 
     setError(false);
   };
-  const LoginAuth = (email, password) =>{
+  const LoginAuth = async(email, password) =>{
     setLoading(true)
     signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
+    .then(async(userCredential) => {
       // Signed in 
       const user = userCredential.user;
+      const userDoc = doc(firestore, "users", user.uid);
+      const userSnap = await getDoc(userDoc)
       setLoading(false)
-      setFirstName('BulSU')
-      setLastName('Admin')
-      setEmail(email)
-      navigate('/registrar/dashboard', { replace: true });
+      if(email === 'incident.report.web.2022@gmail.com'){
+        setUserType('Admin')
+        setFirstName('BulSU')
+        setLastName('Admin')
+        setEmail(email)
+      }
+      else{
+        if (userSnap.exists()){
+          if(userSnap.data().userType === 'Student'){
+            setStudentNumber(userSnap.data().studentNumber)
+            setYear(userSnap.data().yearLevel)
+            setSection(userSnap.data().section)
+            setMiddleName(userSnap.data().middleName)
+            setUserType(userSnap.data().userType)
+            setFirstName(userSnap.data().firstName)
+            setLastName(userSnap.data().lastName)
+            setEmail(email)
+          }
+          else{
+            setUserType(userSnap.data().userType)
+            setFirstName(userSnap.data().firstName)
+            setMiddleName('')
+            setLastName(userSnap.data().lastName)
+            setEmail(email)
+          }
+          
+        }else{
+          console.log("No such document!");
+        }
+      }
+      if(getUserType() === 'Admin')
+      {
+        navigate('/registrar/dashboard', { replace: true });
+      }
+      else if(getUserType() === 'Student'){
+        navigate('/student/incidentsReports', { replace: true });
+      }
+      else{
+        navigate('/evaluator/incidentsReports', { replace: true });
+      }
       // ...
     })
     .catch((error) => {

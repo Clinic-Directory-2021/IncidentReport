@@ -39,7 +39,9 @@ export default function RegisterForm() {
             email:data.email,
             yearLevel:data.yearLevel,
             section:data.section,
-            password:base64.encode(data.password)
+            password:base64.encode(data.password),
+            userType:'Student',
+            studentNumber: data.studentNumber
           }).then(()=>{
           setOpen(true);
           setMessage('Successfully Addeded Evaluator')
@@ -102,9 +104,6 @@ export default function RegisterForm() {
     { label: '2'},
     { label: '3'},
     { label: '4'},
-    { label: '5'},
-    { label: '6'},
-    { label: '7'},
     ];
 
   return (

@@ -34,16 +34,16 @@ export default function Router() {
       path: '/student',
       element: <DashboardLayout />,
       children: [
-        { path: 'dashboard', element: <Dashboard /> },
-        { path: 'incidentsReports', element: <IncidentsReports /> },     
+        { path: 'incidentsReports', element: <IncidentsReports /> },
+        { path: 'report', element: <Report /> },     
       ],
     },
     {
-      path: '/Evaluator',
+      path: '/evaluator',
       element: <DashboardLayout />,
       children: [
-        { path: 'dashboard', element: <Dashboard /> },
-        { path: 'incidentsReports', element: <IncidentsReports /> },     
+        { path: 'incidentsReports', element: <IncidentsReports /> },
+        { path: 'report', element: <Report /> },     
       ],
     },
     {
