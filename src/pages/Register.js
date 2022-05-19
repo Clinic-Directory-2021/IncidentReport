@@ -31,7 +31,7 @@ const HeaderStyle = styled('header')(({ theme }) => ({
   justifyContent: 'space-between',
   [theme.breakpoints.up('md')]: {
     alignItems: 'flex-start',
-    padding: theme.spacing(7, 5, 0, 7),
+
   },
 }));
 
@@ -78,10 +78,10 @@ export default function Register() {
 
         {mdUp && (
           <SectionStyle>
-            <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
+          <Typography style={{marginTop:'100px',textAlign:'center'}} variant="h3" sx={{ px: 5, mt: 1, mb: -10 }}>
               Register Here
             </Typography>
-            <img alt="register" src="/static/illustrations/illustration_register.png" />
+            <img src="/static/illustrations/logo.png" style={{margin:'auto'}} width={380} height={350} alt="login" />
           </SectionStyle>
         )}
 

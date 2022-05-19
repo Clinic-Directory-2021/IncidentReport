@@ -232,7 +232,9 @@ export default function User() {
       <text>Injury and Time Incident Report:</text>
       </Box>
       <TextField 
+      placeholder='Possible Reason...'
       style={{
+        placeholder:'qeqeq',
         top:-20,
         padding:'20px',
         display:'flex', 

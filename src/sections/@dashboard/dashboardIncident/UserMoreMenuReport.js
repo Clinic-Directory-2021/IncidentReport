@@ -3,7 +3,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { render } from 'react-dom';
 import { useReactToPrint } from "react-to-print";
 // material
-import { Table, Menu, MenuItem, IconButton, ListItemIcon, ListItemText, TextField } from '@mui/material';
+import { Box, Menu, MenuItem, IconButton, ListItemIcon, ListItemText, TextField } from '@mui/material';
 // component
 import Iconify from '../../../components/Iconify';
 
@@ -16,30 +16,48 @@ class ComponentToPrint extends React.PureComponent {
   render() {
     return (
       <div>
+      <div style={{
+        marginTop:'20px',
+        marginBottom:'10px',
+        display:'flex',
+        justifyContent:'flex-start'
+        }}>
+        
+      
         <h1 style={{
+          marginLeft:'50px',
           marginTop:'50px',
           marginBottom:'50px',
-          display:'flex', 
-          justifyContent:'center', 
-          color: "green"}}>Incident Report</h1>
+          color: "darkblue"}}>Incident Report</h1>
 
+
+
+        <div style={{marginLeft:'340px',}}>
+        <img alt="register" width={150} height={140} src="/static/illustrations/logo.png" />  
+        </div>
+      </div>
+    <Box style={{backgroundColor:'darkblue'}}>
       <div style={{
-        color: "red",
+        color: "white",
         marginLeft:'50px',
         fontSize:'21px',
         fontWeight:'bold'}}>
       <text>STUDENT DETAILS</text>
       </div>
+    </Box>
+
+
       &nbsp;&nbsp;&nbsp;
       &nbsp;&nbsp;&nbsp;
       &nbsp;&nbsp;&nbsp;
       <div style={{
+        fontWeight:'bold',
         marginLeft:'50px',
         fontSize:'18px',
         display:'flex', 
         flexDirection:'column'}}>
         <div style={{flexDirection:'row'}}>
-        <text>Gmail</text>
+        <text>Name</text>
         <TextField
           style={{marginTop:'-10px',left:120,width:'70%'}}
         
@@ -51,10 +69,9 @@ class ComponentToPrint extends React.PureComponent {
 
 
         <div style={{flexDirection:'row'}}>
-        <text>Name</text>  
+        <text>Gmail</text>  
         <TextField
           style={{marginTop:'-10px',left:120,width:'70%'}}
-        
           id="standard-error-helper-text"
           variant="standard"
         />
@@ -77,6 +94,7 @@ class ComponentToPrint extends React.PureComponent {
       &nbsp;&nbsp;&nbsp;
       
       <div style={{
+        fontWeight:'bold',
         marginLeft:'50px',
         fontSize:'18px',
         display:'flex', 
@@ -102,15 +120,58 @@ class ComponentToPrint extends React.PureComponent {
           variant="standard"
         />
         </div>
-      </div>
 
+        &nbsp;&nbsp;&nbsp;
+
+
+        <div style={{flexDirection:'row'}}>
+        <text>Incident Type</text>  
+        <TextField
+          style={{marginTop:'-10px',left:55,width:'70%'}}
+
+          id="standard-error-helper-text"
+          variant="standard"
+        />
+        </div>
+
+        &nbsp;&nbsp;&nbsp;
+
+
+        <div style={{flexDirection:'row'}}>
+        <text>Processed By</text>  
+        <TextField
+          style={{marginTop:'-10px',left:55,width:'70%'}}
+
+          id="standard-error-helper-text"
+          variant="standard"
+        />
+        </div>
+
+        &nbsp;&nbsp;&nbsp;
+        <div style={{marginTop:'30px',flexDirection:'column'}}>
+        <text>Possible Reason</text> 
+        <TextField
+          style={{backgroundColor:'#e8eff5', marginTop:'10px',width:'93%',}}
+          InputProps={{ style: { fontSize: 150 } }}
+          InputLabelProps={{ style: { fontSize: 150 } }}
+          id="standard-error-helper-text"
+        />
+        </div>
+        &nbsp;&nbsp;&nbsp;
+        <div style={{ marginTop:'140px',flexDirection:'column'}}>
+        <text>Comments</text> 
+        <TextField
+          style={{backgroundColor:'#e8eff5', marginTop:'10px',width:'93%',}}
+          InputProps={{ style: { fontSize: 150 } }}
+          InputLabelProps={{ style: { fontSize: 150 } }}
+          id="standard-error-helper-text"
+        />
+        </div>
+      </div>
       </div>
     );
   }
 }
-
-
-
 
 // ----------------------------------------------------------------------
 
