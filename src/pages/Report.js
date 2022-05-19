@@ -336,7 +336,7 @@ React.useEffect(() => {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={incidentData.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
