@@ -13,16 +13,17 @@ import account from '../../_mock/account';
 
 // ----------------------------------------------------------------------
 
+
 const MENU_OPTIONS = [
   {
     label: 'Profile',
     icon: 'eva:person-fill',
-    linkTo: '#',
+    linkTo: '/student/profile',
   },
   {
     label: 'Settings',
     icon: 'eva:settings-2-fill',
-    linkTo: '#',
+    linkTo: '/student/settings',
   },
   {
     label: 'Logout',

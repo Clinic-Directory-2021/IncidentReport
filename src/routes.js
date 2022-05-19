@@ -12,6 +12,8 @@ import Evaluators from './pages/Evaluators';
 import Report from './pages/Report';
 import IndividualReport from './pages/IndividualReport';
 import Student from './pages/Student';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings'
 
 
 // ----------------------------------------------------------------------
@@ -35,7 +37,11 @@ export default function Router() {
       element: <DashboardLayout />,
       children: [
         { path: 'incidentsReports', element: <IncidentsReports /> },
-        { path: 'report', element: <Report /> },     
+        { path: 'report', element: <Report /> }, 
+        { path: 'profile', element: <Profile /> },  
+        { path: 'settings', element: <Settings/> },  
+       
+        
       ],
     },
     {
@@ -43,7 +49,8 @@ export default function Router() {
       element: <DashboardLayout />,
       children: [
         { path: 'incidentsReports', element: <IncidentsReports /> },
-        { path: 'report', element: <Report /> },     
+        { path: 'report', element: <Report /> },  
+            
       ],
     },
     {

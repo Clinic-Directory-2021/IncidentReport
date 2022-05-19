@@ -272,9 +272,9 @@ export default function User() {
       <text>Section: {getIndividualData().section}</text>
       <text>Incident Type: {getIndividualData().incidentType}</text>
       </Box>
-      <div>
+      {/* <div>
         
-      </div>
+      </div> */}
       <TextField 
       placeholder='Possible Reason...'
       value={specificDetail}
