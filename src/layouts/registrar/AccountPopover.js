@@ -32,6 +32,14 @@ const MENU_OPTIONS = [
   },
 ];
 
+const ADMIN = [
+  {
+    label: 'Logout',
+    icon: 'eva:settings-2-fill',
+    linkTo: '/login',
+  },
+];
+
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
@@ -96,11 +104,19 @@ export default function AccountPopover() {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Stack sx={{ p: 1 }}>
-          {MENU_OPTIONS.map((option) => (
+          {getUserType() !== 'Admin' ?
+          MENU_OPTIONS.map((option) => (
             <MenuItem key={option.label} to={option.linkTo} component={RouterLink} onClick={handleClose}>
               {option.label}
             </MenuItem>
-          ))}
+          ))
+          :
+          ADMIN.map((option) => (
+            <MenuItem key={option.label} to={option.linkTo} component={RouterLink} onClick={handleClose}>
+              {option.label}
+            </MenuItem>
+          ))
+          }
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />

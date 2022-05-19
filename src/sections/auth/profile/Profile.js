@@ -13,7 +13,7 @@ import { auth,firestore } from 'src/firebase/firebase-config';
 import { createUserWithEmailAndPassword,updateProfile } from "firebase/auth";
 import { doc, setDoc, updateDoc } from "firebase/firestore"; 
 
-import { getEmail, getFirstName, getLastName, getMiddleName, getSection, getStudentNumber, getYear, setEmail, setFirstName, setLastName, setMiddleName, setSection, setStudentNumber, setYear, } from '../login/LoginModel';
+import { getEmail, getFirstName, getLastName, getMiddleName, getSection, getStudentNumber, getUserType, getYear, setEmail, setFirstName, setLastName, setMiddleName, setSection, setStudentNumber, setYear, } from '../login/LoginModel';
 
 import Iconify from '../../../components/Iconify';
 
@@ -101,11 +101,15 @@ export default function Profile() {
               helperText={touched.firstName && errors.firstName}
             />
 
-            <TextField
+            {getUserType() === 'Student' ?
+              <TextField
               fullWidth
               label="Middle Name"
               {...getFieldProps('middleName')}
             />
+            :
+            <></>
+            }
 
           <TextField
               fullWidth
@@ -117,6 +121,7 @@ export default function Profile() {
 
           </Stack>
 
+          {getUserType() === 'Student' ?
           <TextField
             fullWidth
             type="number"
@@ -125,6 +130,9 @@ export default function Profile() {
             error={Boolean(touched.studentNumber && errors.studentNumber)}
             helperText={touched.studentNumber && errors.studentNumber}
           />
+          :
+          <></>
+          }
 
           <TextField
             fullWidth
@@ -136,6 +144,7 @@ export default function Profile() {
             helperText={touched.email && errors.email}
           />
 
+          {getUserType() === 'Student' ?
           <Autocomplete
             fullWidth
             disablePortal
@@ -151,7 +160,11 @@ export default function Profile() {
               formik.values.yearLevel = newInputValue
             }}
           />
+          :
+          <></>
+          }
 
+          {getUserType() === 'Student' ?
           <TextField
             fullWidth
             label="Section"
@@ -159,6 +172,9 @@ export default function Profile() {
             error={Boolean(touched.section && errors.section)}
             helperText={touched.section && errors.section}
           />
+          :
+          <></>
+          }
 
           <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={loading}>
             Save
