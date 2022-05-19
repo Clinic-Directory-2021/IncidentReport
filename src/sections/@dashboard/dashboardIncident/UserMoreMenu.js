@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // material
 import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText } from '@mui/material';
 
@@ -9,9 +9,11 @@ import { signInWithEmailAndPassword, deleteUser } from "firebase/auth"
 import { doc, getDoc, deleteDoc } from "firebase/firestore";
 
 import { getUserType } from 'src/sections/auth/login/LoginModel';
+import { setIndividualData } from './individualModel';
 
 // component
 import Iconify from '../../../components/Iconify';
+
 
 
 const base64 = require('base-64');
@@ -19,6 +21,8 @@ const base64 = require('base-64');
 // ----------------------------------------------------------------------
 
 export default function UserMoreMenu(props) {
+  setIndividualData(props.data)
+  const navigate = useNavigate();
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -70,7 +74,7 @@ export default function UserMoreMenu(props) {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        {getUserType() !== 'Student' ?
+        {getUserType() !== 'Student' && props.data.status === 'open' ?
         <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>
           <ListItemIcon>
             <Iconify icon="eva:bookmark-outline" width={24} height={24} />
@@ -80,12 +84,17 @@ export default function UserMoreMenu(props) {
         :
         <></>
         }
-        <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>
+
+        {props.data.status === 'on process' ?
+          <MenuItem component={RouterLink} to="/IR/IndividualReport" sx={{ color: 'text.secondary' }}>
           <ListItemIcon>
             <Iconify icon="eva:eye-outline" width={24} height={24} />
           </ListItemIcon>
           <ListItemText primary="View" primaryTypographyProps={{ variant: 'body2' }} />
         </MenuItem>
+        :
+        <></>
+        }
 
         {getUserType() === 'Student' ?
         <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>

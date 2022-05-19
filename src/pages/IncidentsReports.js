@@ -39,7 +39,7 @@ import {
   Snackbar
 } from '@mui/material';
 
-import { getFirstName, getLastName, getMiddleName, getSection, getStudentNumber, getUserType, getYear } from 'src/sections/auth/login/LoginModel';
+import { getEmail, getFirstName, getLastName, getMiddleName, getSection, getStudentNumber, getUserType, getYear } from 'src/sections/auth/login/LoginModel';
 
 // components
 import Page from '../components/Page';
@@ -282,7 +282,8 @@ export default function User() {
         date:data.date,
         incidentId:incidentId,
         specificDetail:data.specificDetail,
-        status:'open'
+        status:'open',
+        email:data.email
       }).then(()=>{
     });
   }
@@ -297,7 +298,7 @@ export default function User() {
     resolution: Yup.string(),
     processBy: Yup.string(),
     date: Yup.string(),
-
+    email: Yup.string()
   });
 
   const currentDate = () =>{
@@ -316,6 +317,7 @@ export default function User() {
       processBy:'',
       date:currentDate(),
       specificDetail:'',
+      email:getEmail()
     },
     validationSchema: IncidentSchema,
     onSubmit: () => {
@@ -460,7 +462,7 @@ export default function User() {
                         </TableCell>
 
                         <TableCell align="right">
-                          <UserMoreMenu status={status} />
+                          <UserMoreMenu data={row} />
                         </TableCell>
                       </TableRow>
                     );
