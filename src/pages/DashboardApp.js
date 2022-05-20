@@ -180,7 +180,7 @@ export default function DashboardApp() {
         
         <Typography sx={{marginLeft:1}}>
         <h1 align='center'>User list</h1>
-         Date Printed: {currentDate.getMonth() + 1}/{currentDate.getDate()}/{currentDate.getFullYear()}
+         <text style={{fontSize:12}}>Date Printed: {currentDate.getMonth() + 1}/{currentDate.getDate()}/{currentDate.getFullYear()}</text>
         </Typography>
         <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
           <TableHead>
@@ -221,7 +221,7 @@ export default function DashboardApp() {
         <TableContainer component={Paper} ref={evalRef} style={{padding:10}}>
         <Typography sx={{marginLeft:1}}>
         <h1 align='center'>Evaluators list</h1>
-         Date Printed: {currentDate.getMonth() + 1}/{currentDate.getDate()}/{currentDate.getFullYear()}
+        <text style={{fontSize:12}}>Date Printed: {currentDate.getMonth() + 1}/{currentDate.getDate()}/{currentDate.getFullYear()}</text>
         </Typography>
         <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
           <TableHead>
@@ -257,7 +257,7 @@ export default function DashboardApp() {
         <TableContainer component={Paper} ref={incidentRef} style={{padding:10}}>
         <Typography sx={{marginLeft:1}}>
         <h1 align='center'>Incident list</h1>
-         Date Printed: {currentDate.getMonth() + 1}/{currentDate.getDate()}/{currentDate.getFullYear()}
+        <text style={{fontSize:12}}>Date Printed: {currentDate.getMonth() + 1}/{currentDate.getDate()}/{currentDate.getFullYear()}</text>
         </Typography>
         <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
           <TableHead>
@@ -297,7 +297,7 @@ export default function DashboardApp() {
         <TableContainer component={Paper} ref={totalRef} style={{padding:10}}>
         <Typography sx={{marginLeft:1}}>
         <h1 align='center'>Total close incident list</h1>
-         Date Printed: {currentDate.getMonth() + 1}/{currentDate.getDate()}/{currentDate.getFullYear()}
+        <text style={{fontSize:12}}>Date Printed: {currentDate.getMonth() + 1}/{currentDate.getDate()}/{currentDate.getFullYear()}</text>
         </Typography>
         <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
           <TableHead>

@@ -58,6 +58,13 @@ export default function UserMoreMenu(props) {
     }
   }
   const ProcessIncident = async(incidentId) =>{
+    let processByTemp = ''
+    if(getUserType() === 'Admin'){
+      processByTemp = 'Admin'
+    }
+    else{
+      processByTemp = `${getFirstName()} ${getLastName()}`
+    }
     const washingtonRef = doc(firestore, "incidents", incidentId.toString());
 
     // Set the "capital" field of the city 'DC'
