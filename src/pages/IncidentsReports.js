@@ -270,38 +270,41 @@ export default function User() {
   const [snackOpen, setSnackOpen] = React.useState(false);
   const [buttonDisable, setButtonDisable] = React.useState(getOnIncident())
   const [image, setImage] = React.useState(null)
+  const [tempImg, setTempImg] = React.useState(null)
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const IncidentAuth = async(data) =>{
       const incidentId =  Date.parse(new Date())
       const updateUser = doc(firestore, "users", getUid())
-      const imageRef = ref(storage, `incident/  ${incidentId}/`)
-      // const img = await fetch(image)
-      // const bytes = await img.blob()
-      let tempImg = ''
-      uploadBytes(imageRef, image).then((snapshot) => {
+      const imageRef = ref(storage, `incident/${incidentId}/image`)
+      const img = await fetch(image)
+      const bytes = await img.blob()
+      uploadBytes(imageRef, bytes).then((snapshot) => {
         console.log(`Uploaded a blob or file! ${snapshot.ref}`);
-        getDownloadURL(snapshot.ref).then(url => {tempImg = url})
+        let tempT
+        getDownloadURL(snapshot.ref).then(async(url) => {
+          await setDoc(doc(firestore, "incidents", incidentId.toString()),{
+            studentNumber: data.studentNumber,
+            studentName: data.studentName,
+            year:data.year,
+            section:data.section,
+            incidentType:data.incidentType,
+            resolution:data.resolution,
+            processBy:data.processBy,
+            date:data.date,
+            incidentId:incidentId,
+            specificDetail:data.specificDetail,
+            status:'open',
+            email:data.email,
+            uid:data.uid,
+            imageUri:url,
+          }).then(()=>{
+            
+        });
+        })
       });
-      await setDoc(doc(firestore, "incidents", incidentId.toString()),{
-        studentNumber: data.studentNumber,
-        studentName: data.studentName,
-        year:data.year,
-        section:data.section,
-        incidentType:data.incidentType,
-        resolution:data.resolution,
-        processBy:data.processBy,
-        date:data.date,
-        incidentId:incidentId,
-        specificDetail:data.specificDetail,
-        status:'open',
-        email:data.email,
-        uid:data.uid,
-        imageUri:image,
-      }).then(()=>{
-        
-    });
+      
     await updateDoc(updateUser, {
       onIncident: true
     });
