@@ -420,7 +420,7 @@ export default function User() {
       
       {/* Add comment and Post Button */}
       &nbsp;&nbsp;&nbsp;
-      {getIndividualData().status !== 'close' &&  getIndividualData().processBy === `${getFirstName()} ${getLastName()}` ?
+      {getIndividualData().status !== 'close' &&  getIndividualData().processBy === `${getFirstName()} ${getLastName()}` || getUserType()=== 'Student'?
       <Box
       style={{
         borderRadius:'15px',
