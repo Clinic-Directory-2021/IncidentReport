@@ -351,7 +351,7 @@ export default function User() {
     <Box style={{width:'100%'}}>
       <Card>
         <CardContent style={{fontWeight:'bold',color:'blue',display:'flex', justifyContent:'space-between' }}>
-        <text>{data.name}</text>
+        {data.name === `${getFirstName()} ${getLastName()}` ? <text>{data.name}</text>: <text style={{color:'gray'}}>{data.name}</text>}
         <div>
         <text>{data.date}</text>
         <text> </text>
