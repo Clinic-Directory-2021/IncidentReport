@@ -72,7 +72,7 @@ export default function RegisterForm() {
     firstName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('First name required'),
     lastName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Last name required'),
     email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-    password: Yup.string().required('Password is required'),
+    password: Yup.string().min(8,'Password atleast 8 characters').required('Password is required'),
     confirmpassword: Yup.string().required('Confirm Password is required'),
     studentNumber: Yup.string().required('Student number is required'),
     yearLevel: Yup.string().required('Year level is required'),
