@@ -164,6 +164,56 @@ export default function User() {
     setFilterName(event.target.value);
   };
 
+  let incidentFilter = ''
+  
+  const handleFilterIncident = (event, currentValue) => {
+    incidentFilter = currentValue
+    console.log(getUid())
+    if(getUserType !== 'Student')
+    {
+    const q = query(collection(firestore, "incidents"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        if(doc.data().incidentType === incidentFilter){
+          temp.push(doc.data());
+          console.log(doc.data())
+        }
+        else{
+          if(incidentFilter === ''){
+            temp.push(doc.data());
+            console.log('none')
+          }
+        }
+        
+        
+      });
+      setIncidentData(temp)
+    });
+  }
+  else{
+    const q = query(collection(firestore, "incidents"), where('uid' , '==', getUid()));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        if(doc.data().incidentType === incidentFilter){
+          temp.push(doc.data());
+          console.log(doc.data())
+        }
+        else{
+          if(incidentFilter === ''){
+            temp.push(doc.data());
+            console.log('none')
+          }
+        }
+        
+        
+      });
+      setIncidentData(temp)
+    });
+  }
+  };
+
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
   const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
@@ -251,7 +301,9 @@ React.useEffect(() => {
         </Stack>
 
         <Card>
-          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
+          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} 
+          onFilterIncident={handleFilterIncident} 
+          />
           
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>

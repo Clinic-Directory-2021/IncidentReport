@@ -71,6 +71,7 @@ export default function UserMoreMenu(props) {
     await updateDoc(washingtonRef, {
       status: 'on process',
       processBy: `${getFirstName()} ${getLastName()}`,
+      evaluator_uid:getUid(),
     });
 
   }

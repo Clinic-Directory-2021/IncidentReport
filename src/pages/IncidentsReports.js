@@ -216,24 +216,50 @@ export default function User() {
 
   const handleFilterIncident = (event, currentValue) => {
     incidentFilter = currentValue
-    filterTable(incidentFilter,sectionFilter,yearFilter,statusFilter)
-    // const q = query(collection(firestore, "incidents"), where("studentNumber", "==", getStudentNumber()));
-    // const unsubscribe = onSnapshot(q, (querySnapshot) => {
-    //   const temp = [];
-    //   querySnapshot.forEach((doc) => {
-    //     if(doc.data().incidentType === incidentFilter || doc.data().incidentType === sectionFilter || doc.data().incidentType === yearFilter || doc.data().incidentType === statusFilter){
-    //       temp.push(doc.data());
-    //     }
-    //     else{
-    //       if(incidentFilter === ''){
-    //         temp.push(doc.data());
-    //       }
-    //     }
+    console.log(getUid())
+    if(getUserType !== 'Student')
+    {
+    const q = query(collection(firestore, "incidents"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        if(doc.data().incidentType === incidentFilter){
+          temp.push(doc.data());
+          console.log(doc.data())
+        }
+        else{
+          if(incidentFilter === ''){
+            temp.push(doc.data());
+            console.log('none')
+          }
+        }
         
         
-    //   });
-    //   setIncidentData(temp)
-    // });
+      });
+      setIncidentData(temp)
+    });
+  }
+  else{
+    const q = query(collection(firestore, "incidents"), where('uid' , '==', getUid()));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        if(doc.data().incidentType === incidentFilter){
+          temp.push(doc.data());
+          console.log(doc.data())
+        }
+        else{
+          if(incidentFilter === ''){
+            temp.push(doc.data());
+            console.log('none')
+          }
+        }
+        
+        
+      });
+      setIncidentData(temp)
+    });
+  }
   };
   const handleFilterSection = (event, currentValue) => {
     sectionFilter = currentValue
