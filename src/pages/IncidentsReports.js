@@ -74,6 +74,13 @@ const INCIDENT_TYPE = [
   { id:'7', label: 'Others'},
   ];
 
+  const FILTER = [
+    { id:'1', label: 'Incident type'},
+    { id:'2', label: 'Section'},
+    { id:'3', label: 'Year level'},
+    { id:'4', label: 'Status'},
+    ];
+
 
 // MODAL ----------------------------------------------------------------------
 const style = {
@@ -131,6 +138,7 @@ export default function User() {
   const [orderBy, setOrderBy] = useState('name');
 
   const [filterName, setFilterName] = useState('');
+  const [filterSelect, setFilterSelect] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -213,6 +221,7 @@ export default function User() {
   let sectionFilter = ''
   let yearFilter = ''
   let statusFilter = ''
+  let selectFilter = ''
 
   const handleFilterIncident = (event, currentValue) => {
     incidentFilter = currentValue
@@ -261,18 +270,150 @@ export default function User() {
     });
   }
   };
+
   const handleFilterSection = (event, currentValue) => {
     sectionFilter = currentValue
-    filterTable(incidentFilter,sectionFilter,yearFilter,statusFilter)
+    if(getUserType !== 'Student')
+    {
+    const q = query(collection(firestore, "incidents"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        if(doc.data().section === sectionFilter){
+          temp.push(doc.data());
+          console.log(doc.data())
+        }
+        else{
+          if(sectionFilter === ''){
+            temp.push(doc.data());
+            console.log('none')
+          }
+        }
+        
+        
+      });
+      setIncidentData(temp)
+    });
+  }
+  else{
+    const q = query(collection(firestore, "incidents"), where('uid' , '==', getUid()));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        if(doc.data().section === sectionFilter){
+          temp.push(doc.data());
+          console.log(doc.data())
+        }
+        else{
+          if(sectionFilter === ''){
+            temp.push(doc.data());
+            console.log('none')
+          }
+        }
+        
+        
+      });
+      setIncidentData(temp)
+    });
+  }
   };
+
   const handleFilterYear = (event, currentValue) => {
     yearFilter = currentValue
-    filterTable(incidentFilter,sectionFilter,yearFilter,statusFilter)
+    if(getUserType !== 'Student')
+    {
+    const q = query(collection(firestore, "incidents"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        if(doc.data().year === yearFilter){
+          temp.push(doc.data());
+          console.log(doc.data())
+        }
+        else{
+          if(yearFilter === ''){
+            temp.push(doc.data());
+            console.log('none')
+          }
+        }
+        
+        
+      });
+      setIncidentData(temp)
+    });
+  }
+  else{
+    const q = query(collection(firestore, "incidents"), where('uid' , '==', getUid()));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        if(doc.data().section === yearFilter){
+          temp.push(doc.data());
+          console.log(doc.data())
+        }
+        else{
+          if(yearFilter === ''){
+            temp.push(doc.data());
+            console.log('none')
+          }
+        }
+        
+        
+      });
+      setIncidentData(temp)
+    });
+  }
   };
 
   const handleFilterStatus = (event, currentValue) => {
     statusFilter = currentValue
-    filterTable(incidentFilter,sectionFilter,yearFilter,statusFilter)
+    if(getUserType !== 'Student')
+    {
+    const q = query(collection(firestore, "incidents"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        if(doc.data().status === statusFilter){
+          temp.push(doc.data());
+          console.log(doc.data())
+        }
+        else{
+          if(statusFilter === ''){
+            temp.push(doc.data());
+            console.log('none')
+          }
+        }
+        
+        
+      });
+      setIncidentData(temp)
+    });
+  }
+  else{
+    const q = query(collection(firestore, "incidents"), where('uid' , '==', getUid()));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        if(doc.data().status === statusFilter){
+          temp.push(doc.data());
+          console.log(doc.data())
+        }
+        else{
+          if(statusFilter === ''){
+            temp.push(doc.data());
+            console.log('none')
+          }
+        }
+        
+        
+      });
+      setIncidentData(temp)
+    });
+  }
+  };
+  const handleFilterSelect = (event, currentValue) => {
+    selectFilter = currentValue
+    setFilterSelect(currentValue)
   };
 
   const filterTable = (incident,section, year, status) =>{
@@ -419,12 +560,12 @@ export default function User() {
         <FormikProvider value={formik}>
           <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
             <Box sx={style}>
-              <Autocomplete
+              {/* <Autocomplete
                 fullWidth
                 disablePortal
                 id="combo-box-demo"
-                options={INCIDENT_TYPE}         
-                renderInput={(params) => <TextField {...params} label="Incident Type" 
+                options={FILTER}         
+                renderInput={(params) => <TextField {...params} label="Select Filter" 
                 {...getFieldProps('incidentType')}
                 error={Boolean(touched.incidentType && errors.incidentType)}
                 helperText={touched.incidentType && errors.incidentType} />}
@@ -433,7 +574,7 @@ export default function User() {
                   formik.values.incidentType = newInputValue
                 }}
                 getOpt
-              />
+              /> */}
               <div style={{marginTop:'20px'}}>
                 <CKEditor
                 editor={ClassicEditor}
@@ -456,11 +597,13 @@ export default function User() {
         </Stack>
 
         <Card>
-          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} 
+          <UserListToolbar numSelected={selected.length} filterName={filterName} filterSelect={filterSelect}
+          onFilterName={handleFilterByName} 
           onFilterStatus={handleFilterStatus}
           onFilterYear={handleFilterYear}
           onFilterSection={handleFilterSection}
           onFilterIncident={handleFilterIncident} 
+          onFilterSelect={handleFilterSelect}
           />
           
           <Scrollbar>

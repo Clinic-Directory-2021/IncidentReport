@@ -45,6 +45,25 @@ const section = [
   { id:'5', label: 'E'},
   { id:'6', label: 'F'},
   { id:'7', label: 'G'},
+  { id:'8', label: 'H'},
+  { id:'9', label: 'I'},
+  { id:'10', label: 'J'},
+  { id:'11', label: 'K'},
+  { id:'12', label: 'L'},
+  { id:'13', label: 'M'},
+  { id:'14', label: 'N'},
+  { id:'15', label: 'O'},
+  { id:'16', label: 'P'},
+  { id:'17', label: 'Q'},
+  { id:'18', label: 'R'},
+  { id:'19', label: 'S'},
+  { id:'20', label: 'T'},
+  { id:'21', label: 'U'},
+  { id:'22', label: 'V'},
+  { id:'23', label: 'W'},
+  { id:'24', label: 'X'},
+  { id:'25', label: 'Y'},
+  { id:'26', label: 'Z'},
 ];
 
 const yearLevel = [
@@ -55,10 +74,17 @@ const yearLevel = [
 ];
 
 const status = [
-  { id:'1', label: 'Open'},
-  { id:'2', label: 'On process'},
-  { id:'3', label: 'Close'},
+  { id:'1', label: 'open'},
+  { id:'2', label: 'on process'},
+  { id:'3', label: 'close'},
 ];
+
+const FILTER = [
+  { id:'1', label: 'Incident type'},
+  { id:'2', label: 'Section'},
+  { id:'3', label: 'Year level'},
+  { id:'4', label: 'Status'},
+  ];
 
 
 
@@ -85,7 +111,7 @@ UserListToolbar.propTypes = {
   onFilterName: PropTypes.func,
 };
 
-export default function UserListToolbar({ numSelected, filterName, onFilterName, onFilterIncident, onFilterYear, onFilterSection, onFilterStatus }) {
+export default function UserListToolbar({ numSelected, filterName, onFilterName, onFilterIncident, onFilterYear, onFilterSection, onFilterStatus, onFilterSelect, filterSelect}) {
   return (
 
   
@@ -114,16 +140,37 @@ export default function UserListToolbar({ numSelected, filterName, onFilterName,
         />
         
       )} */}
-        
+      
       <Autocomplete
       disablePortal
       id="combo-box-demo"
-      options={incidentType}
+      options={FILTER}
       sx={{ width: 200 }}
-      renderInput={(params) => <TextField {...params} label="Incident Type" />}
-      onInputChange={onFilterIncident}
+      renderInput={(params) => <TextField {...params} label="Select Filter" />}
+      onInputChange={onFilterSelect}
     />
-    <Autocomplete
+
+      {filterSelect === 'Incident type' ? 
+      <Autocomplete
+        disablePortal
+        id="combo-box-demo"
+        options={incidentType}
+        sx={{ width: 200 }}
+        renderInput={(params) => <TextField {...params} label="Incident Type" />}
+        onInputChange={onFilterIncident}
+      />
+      :
+      <Autocomplete
+        disablePortal
+        id="combo-box-demo"
+        options={incidentType}
+        sx={{ width: 200, display:"none"}}
+        renderInput={(params) => <TextField {...params} label="Incident Type" />}
+        onInputChange={onFilterIncident}
+      />
+      }
+      {filterSelect === 'Section' ? 
+      <Autocomplete
       disablePortal
       id="combo-box-demo"
       options={section}
@@ -131,7 +178,19 @@ export default function UserListToolbar({ numSelected, filterName, onFilterName,
       renderInput={(params) => <TextField {...params} label="Section" />}
       onInputChange={onFilterSection}
     />
-    <Autocomplete
+      :
+      <Autocomplete
+      disablePortal
+      id="combo-box-demo"
+      options={section}
+      sx={{ width: 200, display:"none" }}
+      renderInput={(params) => <TextField {...params} label="Section" />}
+      onInputChange={onFilterSection}
+    />
+      }
+
+  {filterSelect === 'Year level' ? 
+      <Autocomplete
       disablePortal
       id="combo-box-demo"
       options={yearLevel}
@@ -139,7 +198,19 @@ export default function UserListToolbar({ numSelected, filterName, onFilterName,
       renderInput={(params) => <TextField {...params} label="Year Level" />}
       onInputChange={onFilterYear}
     />
-    <Autocomplete
+      :
+      <Autocomplete
+      disablePortal
+      id="combo-box-demo"
+      options={yearLevel}
+      sx={{ width: 200, display:'none' }}
+      renderInput={(params) => <TextField {...params} label="Year Level" />}
+      onInputChange={onFilterYear}
+    />
+      }
+
+{filterSelect === 'Status' ? 
+      <Autocomplete
       disablePortal
       id="combo-box-demo"
       options={status}
@@ -147,6 +218,16 @@ export default function UserListToolbar({ numSelected, filterName, onFilterName,
       renderInput={(params) => <TextField {...params} label="Status" />}
       onInputChange={onFilterStatus}
     />
+      :
+      <Autocomplete
+      disablePortal
+      id="combo-box-demo"
+      options={status}
+      sx={{ width: 200, display:'none' }}
+      renderInput={(params) => <TextField {...params} label="Status" />}
+      onInputChange={onFilterStatus}
+    />
+      }
   
   
   

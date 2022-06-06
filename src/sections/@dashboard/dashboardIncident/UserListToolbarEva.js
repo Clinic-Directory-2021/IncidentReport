@@ -73,7 +73,7 @@ export default function UserListToolbarEva({ numSelected, filterName, onFilterNa
         }),
       }}
     >
-      {numSelected > 0 ? (
+      {/* {numSelected > 0 ? (
         <Typography component="div" variant="subtitle1">
           {numSelected} selected
         </Typography>
@@ -89,7 +89,7 @@ export default function UserListToolbarEva({ numSelected, filterName, onFilterNa
           }
         />
         
-      )}
+      )} */}
         
     </RootStyle>
   );
