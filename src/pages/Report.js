@@ -118,6 +118,7 @@ export default function User() {
   const [orderBy, setOrderBy] = useState('name');
 
   const [filterName, setFilterName] = useState('');
+  const [filterSelect, setFilterSelect] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -165,6 +166,10 @@ export default function User() {
   };
 
   let incidentFilter = ''
+  let sectionFilter = ''
+  let yearFilter = ''
+  let statusFilter = ''
+  let selectFilter = ''
   
   const handleFilterIncident = (event, currentValue) => {
     incidentFilter = currentValue
@@ -212,6 +217,151 @@ export default function User() {
       setIncidentData(temp)
     });
   }
+  };
+
+  const handleFilterSection = (event, currentValue) => {
+    sectionFilter = currentValue
+    if(getUserType !== 'Student')
+    {
+    const q = query(collection(firestore, "incidents"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        if(doc.data().section === sectionFilter){
+          temp.push(doc.data());
+          console.log(doc.data())
+        }
+        else{
+          if(sectionFilter === ''){
+            temp.push(doc.data());
+            console.log('none')
+          }
+        }
+        
+        
+      });
+      setIncidentData(temp)
+    });
+  }
+  else{
+    const q = query(collection(firestore, "incidents"), where('uid' , '==', getUid()));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        if(doc.data().section === sectionFilter){
+          temp.push(doc.data());
+          console.log(doc.data())
+        }
+        else{
+          if(sectionFilter === ''){
+            temp.push(doc.data());
+            console.log('none')
+          }
+        }
+        
+        
+      });
+      setIncidentData(temp)
+    });
+  }
+  };
+
+  const handleFilterYear = (event, currentValue) => {
+    yearFilter = currentValue
+    if(getUserType !== 'Student')
+    {
+    const q = query(collection(firestore, "incidents"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        if(doc.data().year === yearFilter){
+          temp.push(doc.data());
+          console.log(doc.data())
+        }
+        else{
+          if(yearFilter === ''){
+            temp.push(doc.data());
+            console.log('none')
+          }
+        }
+        
+        
+      });
+      setIncidentData(temp)
+    });
+  }
+  else{
+    const q = query(collection(firestore, "incidents"), where('uid' , '==', getUid()));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        if(doc.data().section === yearFilter){
+          temp.push(doc.data());
+          console.log(doc.data())
+        }
+        else{
+          if(yearFilter === ''){
+            temp.push(doc.data());
+            console.log('none')
+          }
+        }
+        
+        
+      });
+      setIncidentData(temp)
+    });
+  }
+  };
+
+  const handleFilterStatus = (event, currentValue) => {
+    statusFilter = currentValue
+    if(getUserType !== 'Student')
+    {
+    const q = query(collection(firestore, "incidents"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        if(doc.data().status === statusFilter){
+          temp.push(doc.data());
+          console.log(doc.data())
+        }
+        else{
+          if(statusFilter === ''){
+            temp.push(doc.data());
+            console.log('none')
+          }
+        }
+        
+        
+      });
+      setIncidentData(temp)
+    });
+  }
+  else{
+    const q = query(collection(firestore, "incidents"), where('uid' , '==', getUid()));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        if(doc.data().status === statusFilter){
+          temp.push(doc.data());
+          console.log(doc.data())
+        }
+        else{
+          if(statusFilter === ''){
+            temp.push(doc.data());
+            console.log('none')
+          }
+        }
+        
+        
+      });
+      setIncidentData(temp)
+    });
+  }
+  };
+  const handleFilterSelect = (event, currentValue) => {
+    selectFilter = currentValue
+    setFilterSelect(currentValue)
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
@@ -301,8 +451,13 @@ React.useEffect(() => {
         </Stack>
 
         <Card>
-          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} 
+        <UserListToolbar numSelected={selected.length} filterName={filterName} filterSelect={filterSelect}
+          onFilterName={handleFilterByName} 
+          onFilterStatus={handleFilterStatus}
+          onFilterYear={handleFilterYear}
+          onFilterSection={handleFilterSection}
           onFilterIncident={handleFilterIncident} 
+          onFilterSelect={handleFilterSelect}
           />
           
           <Scrollbar>

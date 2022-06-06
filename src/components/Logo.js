@@ -63,5 +63,5 @@ export default function Logo({ disabledLink = false, sx }) {
     return <>{logo}</>;
   }
 
-  return <RouterLink to="/">{logo}</RouterLink>;
+  return <RouterLink to="/registrar/dashboard">{logo}</RouterLink>;
 }
