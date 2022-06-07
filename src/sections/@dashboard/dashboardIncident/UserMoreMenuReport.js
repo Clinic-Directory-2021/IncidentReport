@@ -4,6 +4,7 @@ import { render } from 'react-dom';
 import { useReactToPrint } from "react-to-print";
 // material
 import { Box, Menu, MenuItem, IconButton, ListItemIcon, ListItemText, TextField } from '@mui/material';
+import parse from 'html-react-parser';
 // component
 import Iconify from '../../../components/Iconify';
 
@@ -178,12 +179,13 @@ class ComponentToPrint extends React.PureComponent {
         &nbsp;&nbsp;&nbsp;
         <div style={{marginTop:'30px',flexDirection:'column'}}>
         <text>Possible Reason</text> 
-        <TextField
+        {/* <TextField
           style={{backgroundColor:'#e8eff5', marginTop:'10px',width:'93%',}}
           InputLabelProps={{ style: { fontSize: 150 } }}
           id="standard-error-helper-text"
-          value={this.state.specificDetail}
-        />
+          value={parse(this.state.specificDetail)}
+        /> */}
+        <sss style={{fontWeight:'normal'}}>{parse(this.state.specificDetail)}</sss>
         </div>
         &nbsp;&nbsp;&nbsp;
 

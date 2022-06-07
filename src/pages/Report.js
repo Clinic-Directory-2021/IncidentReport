@@ -473,7 +473,7 @@ React.useEffect(() => {
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {incidentData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                  {incidentData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, key) => {
                     const { studentNumber, 
                             studentName, 
                             date, 
@@ -489,7 +489,7 @@ React.useEffect(() => {
                     return (
                       <TableRow
                         hover
-                        key={incidentId}
+                        key={key}
                         tabIndex={-1}
                         // role="checkbox"
                         selected={isItemSelected}

@@ -19,7 +19,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
-
+import parse from 'html-react-parser';
 
 
 
@@ -167,7 +167,7 @@ export default function User() {
   const navigate = useNavigate()
   const [value, setValue] = React.useState('Controlled');
   
-  const specificDetail = getIndividualData().specificDetail.replace(/[<p></p>]/g,"")
+  const specificDetail = getIndividualData().specificDetail
   const handleChange = (event) => {
     setValue(event.target.value);
   };
@@ -292,8 +292,11 @@ export default function User() {
       <text>Student No:{getIndividualData().studentNumber}</text>
       <text>Section: {getIndividualData().section}</text>
       <text>Incident Type: {getIndividualData().incidentType}</text>
+        <br/>
+        <br/>
+      <sss style={{fontWeight:'normal', marginLeft:20}}>{parse(specificDetail)}</sss>
       </Box>
-      <TextField 
+      {/* <TextField 
       placeholder='Possible Reason...'
       value={specificDetail}
       style={{
@@ -304,7 +307,7 @@ export default function User() {
         justifyContent:'flex-end'}}
       id="outlined-multiline-static" 
       multiline 
-      rows={5} />
+      rows={5} /> */}
 
       {/* <Button
       style={{top:-20,left:'20px'}} 

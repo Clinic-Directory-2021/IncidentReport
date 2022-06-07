@@ -467,7 +467,9 @@ export default function User() {
             uid:data.uid,
             imageUri:url,
           }).then(()=>{
-            
+            console.log('success')
+        }).catch((e)=>{
+          console.log(e)
         });
         })
       });
@@ -560,12 +562,12 @@ export default function User() {
         <FormikProvider value={formik}>
           <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
             <Box sx={style}>
-              {/* <Autocomplete
+                <Autocomplete
                 fullWidth
                 disablePortal
                 id="combo-box-demo"
-                options={FILTER}         
-                renderInput={(params) => <TextField {...params} label="Select Filter" 
+                options={INCIDENT_TYPE}         
+                renderInput={(params) => <TextField {...params} label="Select incident" 
                 {...getFieldProps('incidentType')}
                 error={Boolean(touched.incidentType && errors.incidentType)}
                 helperText={touched.incidentType && errors.incidentType} />}
@@ -574,7 +576,7 @@ export default function User() {
                   formik.values.incidentType = newInputValue
                 }}
                 getOpt
-              /> */}
+              /> 
               <div style={{marginTop:'20px'}}>
                 <CKEditor
                 editor={ClassicEditor}
@@ -619,7 +621,7 @@ export default function User() {
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {incidentData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                  {incidentData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, key) => {
                     const { studentNumber, 
                             studentName, 
                             date, 
@@ -635,7 +637,7 @@ export default function User() {
                     return (
                       <TableRow
                         hover
-                        key={incidentId}
+                        key={key}
                         tabIndex={-1}
                         // role="checkbox"
                         selected={isItemSelected}
