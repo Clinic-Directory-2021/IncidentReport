@@ -68,12 +68,21 @@ export default function UserMoreMenu(props) {
     const washingtonRef = doc(firestore, "incidents", incidentId.toString());
 
     // Set the "capital" field of the city 'DC'
+
+    if(getUserType() === 'Admin'){
+      await updateDoc(washingtonRef, {
+        status: 'on process',
+        processBy: `${getFirstName()} ${getLastName()}`,
+        evaluator_uid: 'Admin',
+      });
+    }
+    else{
     await updateDoc(washingtonRef, {
       status: 'on process',
       processBy: `${getFirstName()} ${getLastName()}`,
-      evaluator_uid:getUid(),
+      evaluator_uid: getUid(),
     });
-
+  }
   }
 
   const DeleteIncident = async(incidentId) =>{
